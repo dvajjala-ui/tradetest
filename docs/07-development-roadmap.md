@@ -1,5 +1,7 @@
 # Development Roadmap
 
+> Original intraday roadmap. Follow the current stage gates G0–G7 in [12-master-implementation-plan.md](12-master-implementation-plan.md); implementation begins only after plan approval.
+
 ## Phase 0 - documentation
 Maintain requirements, architecture, research findings, risk rules, sources and decisions. No live trading.
 

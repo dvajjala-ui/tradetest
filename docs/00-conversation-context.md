@@ -1,5 +1,7 @@
 # Conversation Context and Idea Evolution
 
+> Historical reconstruction of the original intraday discussion. The expanded proposal and current vendor checks are in [12-master-implementation-plan.md](12-master-implementation-plan.md). The Dhan ₹8,691 post described below was **live-data paper trading**, not broker-confirmed live profit; see [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md).
+
 Date captured: 2026-10-08
 
 This file preserves the full development context of the conversation that led to the TradeTest project. It is a development-oriented reconstruction: it preserves the user's requests, important wording/intent, assistant findings, decisions, corrections and unresolved questions so future coding work does not lose the reasoning behind the architecture.
@@ -210,7 +212,7 @@ A reported day included approximately:
 - 30 trades,
 - 25 wins,
 - 5 losses,
-- about ₹8,691 net P&L after their cost assumptions.
+- about ₹8,691 net **paper** P&L after a flat assumed cost, as later clarified by the poster.
 
 But that developer also found a serious software bug where strike-switching caused false/hallucinated P&L. This reinforced the need for:
 

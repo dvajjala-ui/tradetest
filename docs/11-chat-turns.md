@@ -1,5 +1,7 @@
 # Turn-by-Turn Idea Evolution
 
+> Historical handoff. Current expanded proposal: [12-master-implementation-plan.md](12-master-implementation-plan.md). The Dhan result mentioned in the original discussion was a *paper* result, as corrected in [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md).
+
 This is a compact chronological handoff of the actual conversation so later agents understand why the current design exists. docs/00-conversation-context.md contains the fuller reconstruction.
 
 ## Turn 1

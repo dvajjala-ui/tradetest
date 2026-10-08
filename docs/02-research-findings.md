@@ -1,5 +1,7 @@
 # Research Findings and Evidence
 
+> Historical research snapshot. For checked 2026-10-08 sources, corrected anecdote labels and current broker/data comparisons, use [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md) and [13-broker-and-cost-report.md](13-broker-and-cost-report.md).
+
 This document captures external findings discussed during project formation. Pricing, limits and broker policies are time-sensitive; verify all values again before production use.
 
 ## 1. Groww Trading API
@@ -32,7 +34,7 @@ At the time of discussion, Groww API pricing was referenced as:
 - ₹499 + taxes/month, or
 - ₹4,999/year before taxes.
 
-The annual plan was estimated at approximately ₹492/month when averaged including 18% GST.
+The annual plan was estimated at approximately ₹492/month when averaged including 18% GST. **The current public API page checked on 2026-10-08 only states the monthly ₹499 + tax offer; do not budget or buy an annual plan without a current quote.**
 
 Re-check pricing before subscribing.
 
@@ -128,9 +130,9 @@ A reported day included:
 - 30 trades,
 - 25 wins,
 - 5 losses,
-- about ₹8,691 net P&L under their cost model.
+- about ₹8,691 net *paper* P&L under a flat assumed cost model, **not a live broker-confirmed profit**.
 
-More important: the developer found a software/accounting bug causing fake P&L due to strike-switching and mismatched contract tracking.
+More important: the developer found a software/accounting bug causing fake P&L due to strike-switching and mismatched contract tracking. See the [bug correction](https://www.reddit.com/r/IndiaAlgoTrading/comments/1udf1qv/day_0/) and [paper-result clarification](https://www.reddit.com/r/IndiaAlgoTrading/comments/1uedlwj/day_1_more_info_on_my_profile/).
 
 Takeaway:
 

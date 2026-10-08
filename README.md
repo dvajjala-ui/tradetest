@@ -1,22 +1,21 @@
-# TradeTest — AI-Assisted Intraday Trading Research Project
+# TradeTest — India trading and long-term investing research plan
 
-This repository is the working source of truth for the trading-bot idea developed in the ChatGPT discussion on 2026-10-08.
+This repository records the original trading-bot discussion and the expanded implementation proposal. **The current proposal for approval is [docs/12-master-implementation-plan.md](docs/12-master-implementation-plan.md).** This is a planning repository; no trading software or live orders have been implemented.
 
 ## Current concept
 
-Build a **C#/.NET automated intraday research and execution system for Groww** with:
+Build a **C#/.NET evidence, backtesting and execution platform** for Indian markets with:
 
-- ₹5,000 reserved strictly as initial live trading capital.
+- A proposed ₹5,000 restricted intraday live pilot, pending reconfirmation; a separately budgeted long-term investing lane.
 - Infrastructure/API costs paid separately.
 - A short, selective trading session rather than continuous overtrading.
-- Groww Trading API for market data and order execution.
+- Groww Trading API as the provisional first broker, with an adapter boundary and a broker comparison before purchase.
 - Deterministic C# code for indicators, risk controls, order validation, position monitoring, kill switches and audit logging.
-- Groq-hosted GPT-OSS as a fast/cheap AI screening layer.
-- OpenAI GPT-6 Sol as the main reasoning/review layer.
-- GPT-6 Astra only for difficult or ambiguous cases and deeper post-market analysis.
+- A rules-only baseline, with Groq-hosted GPT-OSS and OpenAI Luna/Sol/Astra added only for roles that pass an evidence-based evaluation.
 - Codex, Claude, Gemini and other available AI tools as research/review assistants where useful.
 - Multiple independent sources for research, with official exchange/company/regulatory data preferred over AI-generated claims.
-- Paper trading first, then tightly controlled live trading.
+- A point-in-time company/filing research corpus and separate long-term strategy benchmark.
+- Paper and shadow trading first, then tightly controlled live trading after explicit review.
 - No assumption that AI or automation guarantees profitability.
 
 ## Repository docs
@@ -32,6 +31,12 @@ Build a **C#/.NET automated intraday research and execution system for Groww** w
 9. [Prompts and JSON contracts](docs/08-prompts-and-contracts.md)
 10. [Open questions and decisions](docs/09-open-questions.md)
 11. [Source links](docs/10-sources.md)
+12. [Turn-by-turn historical handoff](docs/11-chat-turns.md)
+13. [Expanded implementation proposal](docs/12-master-implementation-plan.md)
+14. [Broker and cost report](docs/13-broker-and-cost-report.md)
+15. [Research ledger and failure lessons](docs/14-research-ledger-and-failure-lessons.md)
+
+Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–14.
 
 ## Core architectural principle
 
@@ -40,12 +45,8 @@ The AI may recommend. **The AI never has unrestricted authority over money.**
 The final execution path must always be:
 
 ~~~text
-Market data
-  -> deterministic scanner
-  -> AI evaluation
-  -> deterministic risk engine
-  -> broker API
-  -> deterministic position monitor
+Verified dated data -> strategy/rules -> optional AI assessment
+  -> deterministic risk engine -> broker API -> deterministic reconciliation
 ~~~
 
 The risk engine can reject any AI recommendation.

@@ -1,5 +1,27 @@
 # Source Links Referenced During Planning
 
+Current, evaluated links and their implications are in [12-master-implementation-plan.md](12-master-implementation-plan.md), [13-broker-and-cost-report.md](13-broker-and-cost-report.md) and [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md). The links below include sources from the original conversation and are not all current price/entitlement evidence.
+
+## Additional primary sources checked 2026-10-08
+- Groww historical intervals: https://groww.in/trade-api/docs/curl/historical-data
+- Groww feed: https://groww.in/trade-api/docs/python-sdk/feed
+- Groww auth and rate limits: https://groww.in/trade-api/docs/python-sdk
+- Zerodha API tiers: https://zerodha.com/products/api/
+- Dhan data API pricing: https://dhan.co/support/platforms/dhanhq-api/how-to-access-dhan-api/
+- FYERS API tiers, C# and MCP: https://fyers.in/products/api
+- NSE data sharing policy: https://www.nseindia.com/static/market-data/nse-data-policy
+- NSE market-data tariff: https://www.nseindia.com/static/market-data/products-tariff
+- NSE historical/EOD products: https://www.nseindia.com/static/market-data/eod-historical-data-subscription
+- NSE corporate data: https://www.nseindia.com/static/market-data/corporate-data-subscription
+- NSE total returns index methodology: https://www.nseindia.com/static/products-services/indices-total-returns-index
+- Nifty 500 index description: https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-500
+- SEBI retail algo framework: https://www.sebi.gov.in/legal/circulars/feb-2025/safer-participation-of-retail-investors-in-algorithmic-trading_91614.html
+- SEBI extension: https://www.sebi.gov.in/legal/circulars/sep-2025/extension-of-timeline-for-implementation-of-sebi-circular-dated-february-04-2025-on-safer-participation-of-retail-investors-in-algorithmic-trading-_96979.html
+- SEBI SME investor advisory: https://www.sebi.gov.in/media-and-notifications/press-releases/aug-2024/advisory-regarding-investment-in-securities-of-the-companies-listed-on-the-sme-segment-of-stock-exchanges_86205.html
+- Published stock-return paper: https://asu.elsevierpure.com/en/publications/do-stocks-outperform-treasury-bills/
+- Published backtest-overfitting paper: https://escholarship.org/uc/item/4w1110bb
+- OpenAI current API prices: https://developers.openai.com/api/docs/pricing
+
 Time-sensitive pages must be re-verified before implementation.
 
 ## Groww

@@ -1,5 +1,7 @@
 # System Architecture
 
+> Original intraday architecture. The proposed two-lane architecture, dated research store and broker safety details are in [12-master-implementation-plan.md](12-master-implementation-plan.md).
+
 ## Design objective
 
 Build a fail-closed, auditable, provider-independent intraday trading platform where AI assists research and candidate assessment but deterministic .NET code owns state, safety, risk and order execution.

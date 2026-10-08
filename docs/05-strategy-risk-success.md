@@ -1,5 +1,7 @@
 # Strategy, Risk and Success Metrics
 
+> Original intraday strategy sketch. The current proposal adds a separately benchmarked long-term lane and treats 30 paper sessions as an operational floor, not evidence of profitability. See [12-master-implementation-plan.md](12-master-implementation-plan.md).
+
 ## Initial research strategy
 Start with one simple explainable intraday momentum/opening-range + VWAP family using 5-minute candles, price vs VWAP, EMA relationship, volume expansion, ATR, previous-day levels, index direction and optionally verified material news. Exact thresholds must come from backtesting.
 

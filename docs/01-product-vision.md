@@ -1,5 +1,7 @@
 # Product Vision and Requirements
 
+> Original intraday V1 scope. The current proposed product adds a separate long-term investing lane and rules-only evaluation; see [12-master-implementation-plan.md](12-master-implementation-plan.md).
+
 ## Working name
 
 TradeTest

@@ -1,10 +1,15 @@
 # Open Questions and Decisions
 
+The expanded plan's current decision list is in [12-master-implementation-plan.md](12-master-implementation-plan.md). Items below are detailed verification tasks, not a reason to begin implementation before approval.
+
+## Scope and capital
+Confirm the earlier ₹5,000 restricted intraday live pilot or replace it; set a **separate** long-term portfolio allocation, confirm the proposed Nifty 500 TRI benchmark, maximum drawdown and level of manual buy approval. Confirm the name/link of the additional AI tool mentioned by the user. Determine whether this remains strictly a private self-directed tool; sharing signals or advice would need its own regulatory review.
+
 ## Groww
-Verify current auth flow, live-feed capabilities, static-IP registration, rate limits, idempotency/client-order support, smart-order/OCO support, and exact current charges.
+Current docs show key/secret with daily approval or TOTP, live feed, static-IP registration, rate limits, reference-ID lookup, and cash OCO. Verify these **in the authenticated account** and test duplicate-submission semantics, cash/MIS protection timing and exact contract-note charges; a reference ID is not itself proof of idempotency. See [broker report](13-broker-and-cost-report.md).
 
 ## Market data
-Decide whether Groww alone is sufficient or a secondary source is needed; define candle aggregation, historical warm-up and corporate-action handling.
+Groww documents only the last three months for intraday candles and full history for daily/weekly bars. Decide whether to license deeper point-in-time data and corporate data; define permitted use, candle aggregation, historical warm-up and corporate-action handling.
 
 ## Strategy parameters
 Backtest exact opening-range duration, EMA periods, ATR period, volume-ratio definition, minimum R:R, watchlist universe, long-only vs later shorting, exact 20-minute window and whether to avoid the first minutes after open.
@@ -16,7 +21,7 @@ Empirically set max rupee risk/trade, daily loss, max position value, max spread
 Decide which official sources can be automated reliably, whether V1 should be price/volume-only before adding news, and what qualifies as VERIFIED.
 
 ## Models
-Verify exact current Groq/OpenAI model IDs and pricing at build time. Decide fast-model fallback, Astra trigger bands and whether material model disagreement automatically rejects.
+Recheck model IDs and token pricing at build time. First decide whether each model beats a rules-only or simpler-model baseline on a dated evaluation set; then define fallback, deadlines and escalation. Assess the user's additional named AI tool after its identity is known.
 
 ## Infrastructure
 Choose local PC + ISP static IP vs VPS, Windows vs Linux, SQLite vs PostgreSQL later, notifications and secret storage.

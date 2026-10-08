@@ -1,5 +1,7 @@
 # AI Model Routing
 
+> Original model-routing hypothesis. The current proposal starts with a rules-only baseline and adds a model only when controlled evaluation supports it. See [12-master-implementation-plan.md](12-master-implementation-plan.md) and [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md).
+
 ## Principle
 Use exact C# computation first, then progressively more capable AI only when additional reasoning is useful. Never send every tick/candle to an LLM.
 
