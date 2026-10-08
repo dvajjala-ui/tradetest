@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tradetest-dashboard-v1",
-  "generatedAt": "2026-10-08T14:03:50.2182289+00:00",
+  "generatedAt": "2026-10-08T14:42:36.0256911+00:00",
   "dataKind": "Synthetic",
   "mode": "PAPER / OFFLINE",
   "evidenceNote": "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
@@ -23,7 +23,11 @@
     },
     {
       "file": "fixtures/synthetic-long-term.json",
-      "sha256": "f412a4b6976db98e2d6b197af8d2ca45e51148aa8402568584569a64b5362bab"
+      "sha256": "b1c6bc42e2700e50258f5e360e5b28c6418667757f36132da3dbe481345fadb0"
+    },
+    {
+      "file": "fixtures/synthetic-corporate-actions.json",
+      "sha256": "88c34f2a4495acdf4ce13a6b7051e52bb22f30af3707211208522095b2642151"
     },
     {
       "file": "benchmarks/results/2026-10-08.json",
@@ -628,8 +632,8 @@
     "strategyVersion": "quality-growth-momentum-v1",
     "benchmarkSecurityId": "SYNTH-TRI",
     "initialCapital": 5000,
-    "finalCapital": 5970.000,
-    "totalNetReturnPercent": 19.400,
+    "finalCapital": 5968.0119880119880119880119880,
+    "totalNetReturnPercent": 19.360239760239760239760239760,
     "benchmarkTriReturnPercent": 5.00,
     "maximumRebalanceDrawdownPercent": 0,
     "periods": [
@@ -651,13 +655,37 @@
           "SYNTH-F7"
         ],
         "grossReturnPercent": 20.0,
-        "costPercent": 0.600,
-        "netReturnPercent": 19.400,
-        "benchmarkTriReturnPercent": 5.00
+        "costPercent": 0.6397602397602397602397602400,
+        "netReturnPercent": 19.360239760239760239760239760,
+        "benchmarkTriReturnPercent": 5.00,
+        "initialCapital": 5000,
+        "finalCapital": 5968.0119880119880119880119880,
+        "tradingCostsRupees": 30.989010989010989010989010994,
+        "unfundedExitCostsRupees": 0,
+        "terminalSecurities": []
       }
     ],
-    "evidenceNote": "Rank uses only verified facts known by each decision time. Execution uses the next supplied adjusted close. Drawdown is measured only at rebalances. TRI is a research benchmark, not an investable after-fee fund return; costs are supplied assumptions.",
-    "pointInTimeUniverseSupplied": false
+    "evidenceNote": "Verified metrics known by each decision; next supplied close execution; equal-value fractional research holdings with complete liquidation at each rebalance. Entry fees reduce invested cash, exit fees use sale proceeds. Explicit terminal values are carried as cash without broker sale fees. CostPercent measures return drag, while TradingCostsRupees reports cash fees. Drawdown is measured only at rebalances. TRI is not an investable after-fee fund return. Depletion stays at zero, with unfunded exit charges disclosed; these are assumptions, not executable account orders.",
+    "pointInTimeUniverseSupplied": false,
+    "returnDataAsOf": "2026-04-07T11:00:00+00:00",
+    "portfolioDepleted": false,
+    "investableBenchmark": {
+      "securityId": "SYNTH-FUND",
+      "name": "Synthetic broad-market fund",
+      "entryCloseAt": "2026-01-06T10:00:00+00:00",
+      "exitCloseAt": "2026-04-07T10:00:00+00:00",
+      "observations": 2,
+      "initialCapital": 5000,
+      "finalCapital": 5209.5304695304695304695304696,
+      "netReturnPercent": 4.1906093906093906093906093900,
+      "tradingCostsRupees": 30.229770229770229770229770235,
+      "unfundedExitCostsRupees": 0,
+      "maximumObservedDrawdownPercent": 0.4820610687022900763358778600,
+      "annualizedNetReturnPercent": null,
+      "sourceUrl": "https://example.com/synthetic-fund",
+      "licenceId": "SYNTHETIC_TEST_ONLY",
+      "evidenceNote": "Passive buy-and-hold on supplied total-return levels net of fund expenses, with separately funded entry and exit costs. No second expense-ratio subtraction. Fractional research units; no tax or execution-capacity model. Drawdown uses supplied observations and can miss intraperiod losses. Annualization is omitted for periods shorter than one year. Verified source metadata is supplied by the caller and requires independent reconciliation."
+    }
   },
   "research": {
     "asOf": "2026-04-01T00:00:00+00:00",
@@ -1028,5 +1056,76 @@
       "state": "Not enabled",
       "detail": "Requires explicit activation and account-specific risk limits."
     }
-  ]
+  ],
+  "returnAdjustments": {
+    "builderVersion": "forward-total-return-v1",
+    "asOf": "2026-01-10T00:00:00+00:00",
+    "inputSha256": "5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+    "prices": [
+      {
+        "securityId": "SYNTH-ONE",
+        "closeAt": "2026-01-05T15:30:00+05:30",
+        "firstKnownAt": "2026-01-09T16:00:00+05:30",
+        "adjustedTotalReturnClose": 100,
+        "adjustmentVersion": "forward-total-return-v1:5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+        "isTerminal": false,
+        "terminalReason": null,
+        "sourceEvidenceIds": [
+          "close-5"
+        ]
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "closeAt": "2026-01-06T15:30:00+05:30",
+        "firstKnownAt": "2026-01-09T16:00:00+05:30",
+        "adjustedTotalReturnClose": 100,
+        "adjustmentVersion": "forward-total-return-v1:5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+        "isTerminal": false,
+        "terminalReason": null,
+        "sourceEvidenceIds": [
+          "close-6",
+          "split"
+        ]
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "closeAt": "2026-01-07T15:30:00+05:30",
+        "firstKnownAt": "2026-01-09T16:00:00+05:30",
+        "adjustedTotalReturnClose": 100,
+        "adjustmentVersion": "forward-total-return-v1:5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+        "isTerminal": false,
+        "terminalReason": null,
+        "sourceEvidenceIds": [
+          "close-7",
+          "bonus"
+        ]
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "closeAt": "2026-01-08T15:30:00+05:30",
+        "firstKnownAt": "2026-01-09T16:00:00+05:30",
+        "adjustedTotalReturnClose": 100,
+        "adjustmentVersion": "forward-total-return-v1:5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+        "isTerminal": false,
+        "terminalReason": null,
+        "sourceEvidenceIds": [
+          "close-8",
+          "dividend"
+        ]
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "closeAt": "2026-01-09T09:15:00+05:30",
+        "firstKnownAt": "2026-01-09T16:00:00+05:30",
+        "adjustedTotalReturnClose": 0,
+        "adjustmentVersion": "forward-total-return-v1:5fd18354c941e9504b2504b131e8aa8c001e48ba52d294de0b4a524c574ed0ec",
+        "isTerminal": true,
+        "terminalReason": "TerminalWriteOff",
+        "sourceEvidenceIds": [
+          "write-off"
+        ]
+      }
+    ],
+    "evidenceNote": "Forward chain starts at 100; regular cash dividends are reinvested at the supplied ex-date close. Split/bonus terms apply in explicit sequence order. Terminal cash is carried without subsequent reinvestment. Gross pre-tax research returns; no rights, merger, demerger, withholding or settlement-delay model. Source coverage is an input assertion and requires vendor reconciliation."
+  }
 }

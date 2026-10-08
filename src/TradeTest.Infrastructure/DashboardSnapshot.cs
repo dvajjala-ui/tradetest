@@ -16,14 +16,14 @@ public sealed record DashboardSnapshot(string SchemaVersion, DateTimeOffset Gene
     string Mode, string EvidenceNote, IReadOnlyList<SnapshotInput> Inputs, IReadOnlyList<MarketBar> Bars,
     SimulationReport Replay, IntradayStudyReport IntradayStudy, WalkForwardReport WalkForward,
     LongTermEvaluationReport LongTerm, DashboardResearch Research, JsonElement Performance,
-    IReadOnlyList<DashboardGate> Gates);
+    IReadOnlyList<DashboardGate> Gates, TotalReturnBuildReport? ReturnAdjustments = null);
 
 /// <summary>Exports only bundled synthetic fixtures. Never discovers or publishes a private database.</summary>
 public static class DashboardSnapshotBuilder
 {
     public const string SchemaVersion = "tradetest-dashboard-v1";
     private static readonly string[] FixtureFiles =
-    ["synthetic-bars.json", "synthetic-research.json", "synthetic-study.json", "synthetic-walk-forward.json", "synthetic-long-term.json"];
+    ["synthetic-bars.json", "synthetic-research.json", "synthetic-study.json", "synthetic-walk-forward.json", "synthetic-long-term.json", "synthetic-corporate-actions.json"];
 
     public static string FindRepositoryRoot(string start)
     {
@@ -43,9 +43,10 @@ public static class DashboardSnapshotBuilder
         var studyTask = ResearchJson.ReadAsync<IntradayStudyInput>(Path.Combine(fixtures, FixtureFiles[2]), cancellationToken);
         var walkTask = ResearchJson.ReadAsync<WalkForwardInput>(Path.Combine(fixtures, FixtureFiles[3]), cancellationToken);
         var longTask = ResearchJson.ReadAsync<LongTermInput>(Path.Combine(fixtures, FixtureFiles[4]), cancellationToken);
+        var actionsTask = ResearchJson.ReadAsync<TotalReturnBuildInput>(Path.Combine(fixtures, FixtureFiles[5]), cancellationToken);
         string performancePath = Path.Combine(repositoryRoot, "benchmarks", "results", "2026-10-08.json");
         var performanceTask = ResearchJson.ReadAsync<JsonElement>(performancePath, cancellationToken);
-        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, performanceTask);
+        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, actionsTask, performanceTask);
         var research = await researchTask;
         var study = await studyTask;
         var walk = await walkTask;
@@ -67,7 +68,7 @@ public static class DashboardSnapshotBuilder
             new WalkForwardEvaluator().Evaluate(walk.Sessions, walk.Config, walk.Plan),
             new LongTermEvaluator().Evaluate(longTerm.DecisionTimes, longTerm.Metrics, longTerm.Prices,
                 longTerm.BenchmarkSecurityId, longTerm.InitialCapital, longTerm.MaxHoldings,
-                longTerm.EntryCostBps, longTerm.ExitCostBps, longTerm.FixedSellChargePerHolding, longTerm.ReferenceData),
+                longTerm.EntryCostBps, longTerm.ExitCostBps, longTerm.FixedSellChargePerHolding, longTerm.ReferenceData, longTerm.ReturnDataAsOf, longTerm.InvestableBenchmark),
             new DashboardResearch(asOf, packet.Hash, packet.Facts, research.Metrics,
                 new LongTermRanker().Rank(research.Metrics, asOf),
                 research.Documents.Select(d => d.ToDocument()).Select(d => new DashboardDocument(d.DocumentId,
@@ -81,6 +82,6 @@ public static class DashboardSnapshotBuilder
                 new("g4", "Live-data paper sessions", "Pending", "Authenticated no-order feed, reconciliation, fault drills and operational sessions remain."),
                 new("g5", "Broker orders", "Not enabled", "Requires separately reviewed integration and evidence gates."),
                 new("g6", "Real-money activation", "Not enabled", "Requires explicit activation and account-specific risk limits.")
-            ]);
+            ], new TotalReturnBuilder().Build(await actionsTask));
     }
 }

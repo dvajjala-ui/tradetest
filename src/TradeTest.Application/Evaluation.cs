@@ -84,7 +84,10 @@ public sealed record TotalReturnPrice(
     DateTimeOffset CloseAt,
     DateTimeOffset FirstKnownAt,
     decimal AdjustedTotalReturnClose,
-    string AdjustmentVersion);
+    string AdjustmentVersion,
+    bool IsTerminal = false,
+    string? TerminalReason = null,
+    IReadOnlyList<string>? SourceEvidenceIds = null);
 
 public sealed record LongTermPeriodResult(
     DateTimeOffset DecisionAt,
@@ -96,7 +99,12 @@ public sealed record LongTermPeriodResult(
     decimal GrossReturnPercent,
     decimal CostPercent,
     decimal NetReturnPercent,
-    decimal BenchmarkTriReturnPercent);
+    decimal BenchmarkTriReturnPercent,
+    decimal InitialCapital = 0m,
+    decimal FinalCapital = 0m,
+    decimal TradingCostsRupees = 0m,
+    decimal UnfundedExitCostsRupees = 0m,
+    IReadOnlyList<string>? TerminalSecurities = null);
 
 public sealed record LongTermEvaluationReport(
     string StrategyVersion,
@@ -108,86 +116,7 @@ public sealed record LongTermEvaluationReport(
     decimal MaximumRebalanceDrawdownPercent,
     IReadOnlyList<LongTermPeriodResult> Periods,
     string EvidenceNote,
-    bool PointInTimeUniverseSupplied = false);
-
-/// <summary>Research backtest with next available close execution and explicit data failures.</summary>
-public sealed class LongTermEvaluator
-{
-    private readonly LongTermRanker _ranker = new();
-
-    public LongTermEvaluationReport Evaluate(
-        IReadOnlyList<DateTimeOffset> decisionTimes,
-        IReadOnlyList<CompanyMetric> metrics,
-        IReadOnlyList<TotalReturnPrice> prices,
-        string benchmarkSecurityId,
-        decimal initialCapital,
-        int maxHoldings,
-        decimal entryCostBps,
-        decimal exitCostBps,
-        decimal fixedSellChargePerHolding,
-        MarketReferenceData? referenceData = null)
-    {
-        if (decisionTimes.Count < 2 || decisionTimes.Zip(decisionTimes.Skip(1)).Any(x => x.First >= x.Second))
-            throw new ArgumentException("At least two strictly increasing decision times are required.", nameof(decisionTimes));
-        if (initialCapital <= 0 || maxHoldings <= 0 || entryCostBps < 0 || exitCostBps < 0 || fixedSellChargePerHolding < 0)
-            throw new ArgumentException("Invalid portfolio/cost configuration.");
-        if (prices.Any(p => p.AdjustedTotalReturnClose <= 0 || p.FirstKnownAt < p.CloseAt))
-            throw new ArgumentException("Invalid dated total-return price.", nameof(prices));
-        if (prices.GroupBy(p => (p.SecurityId, p.CloseAt)).Any(g => g.Count() > 1))
-            throw new ArgumentException("Duplicate security/close timestamp.", nameof(prices));
-
-        var bySecurity = prices.GroupBy(p => p.SecurityId, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(g => g.Key, g => g.OrderBy(p => p.CloseAt).ToArray(), StringComparer.OrdinalIgnoreCase);
-        if (!bySecurity.TryGetValue(benchmarkSecurityId, out var benchmark))
-            throw new ArgumentException("Benchmark price series is required.", nameof(prices));
-        var master = referenceData is null ? null : new SecurityMaster(referenceData.Securities);
-        decimal capital = initialCapital, benchmarkGrowth = 1m, peak = capital, drawdown = 0;
-        var periods = new List<LongTermPeriodResult>();
-        for (int i = 0; i < decisionTimes.Count - 1; i++)
-        {
-            DateTimeOffset decision = decisionTimes[i], nextDecision = decisionTimes[i + 1];
-            var entryBenchmark = benchmark.FirstOrDefault(p => p.CloseAt > decision)
-                ?? throw new InvalidDataException("Missing benchmark entry close.");
-            var exitBenchmark = benchmark.FirstOrDefault(p => p.CloseAt > nextDecision)
-                ?? throw new InvalidDataException("Missing benchmark exit close.");
-            if (entryBenchmark.AdjustmentVersion != exitBenchmark.AdjustmentVersion)
-                throw new InvalidDataException("Benchmark adjustment versions differ.");
-            decimal benchmarkReturn = exitBenchmark.AdjustedTotalReturnClose / entryBenchmark.AdjustedTotalReturnClose - 1m;
-            benchmarkGrowth *= 1m + benchmarkReturn;
-
-            var selected = _ranker.Rank(metrics, decision)
-                .Where(s => master is null || master.GetAt(s.SecurityId, decision) is { Segment: var segment } &&
-                    segment.Equals("CASH_EQUITY", StringComparison.OrdinalIgnoreCase)).Take(maxHoldings).ToArray();
-            decimal gross = 0m;
-            foreach (var score in selected)
-            {
-                if (!bySecurity.TryGetValue(score.SecurityId, out var series))
-                    throw new InvalidDataException($"No total-return prices for {score.SecurityId}.");
-                var entry = series.SingleOrDefault(p => p.CloseAt == entryBenchmark.CloseAt)
-                    ?? throw new InvalidDataException($"Missing entry close for {score.SecurityId}.");
-                var exit = series.SingleOrDefault(p => p.CloseAt == exitBenchmark.CloseAt)
-                    ?? throw new InvalidDataException($"Missing exit/delisting value for {score.SecurityId}.");
-                if (entry.AdjustmentVersion != exit.AdjustmentVersion)
-                    throw new InvalidDataException($"Adjustment versions differ for {score.SecurityId}.");
-                gross += exit.AdjustedTotalReturnClose / entry.AdjustedTotalReturnClose - 1m;
-            }
-            if (selected.Length > 0) gross /= selected.Length;
-            decimal cost = selected.Length == 0 ? 0m :
-                (entryCostBps + exitCostBps) / 10_000m + selected.Length * fixedSellChargePerHolding / capital;
-            decimal net = gross - cost;
-            capital *= 1m + net;
-            if (capital <= 0) throw new InvalidDataException("Portfolio depleted under supplied cost/return assumptions.");
-            peak = Math.Max(peak, capital);
-            drawdown = Math.Max(drawdown, (peak - capital) / peak * 100m);
-            periods.Add(new LongTermPeriodResult(decision, nextDecision, entryBenchmark.CloseAt,
-                exitBenchmark.CloseAt, selected.Select(s => s.SecurityId).ToArray(),
-                selected.SelectMany(s => s.EvidenceFactIds).Distinct().Order(StringComparer.Ordinal).ToArray(),
-                gross * 100m, cost * 100m, net * 100m, benchmarkReturn * 100m));
-        }
-        return new LongTermEvaluationReport(LongTermRanker.Version, benchmarkSecurityId, initialCapital,
-            capital, (capital / initialCapital - 1m) * 100m, (benchmarkGrowth - 1m) * 100m,
-            drawdown, periods,
-            "Rank uses only verified facts known by each decision time. Execution uses the next supplied adjusted close. Drawdown is measured only at rebalances. TRI is a research benchmark, not an investable after-fee fund return; costs are supplied assumptions.",
-            referenceData is not null);
-    }
-}
+    bool PointInTimeUniverseSupplied = false,
+    DateTimeOffset? ReturnDataAsOf = null,
+    bool PortfolioDepleted = false,
+    InvestableBenchmarkReport? InvestableBenchmark = null);

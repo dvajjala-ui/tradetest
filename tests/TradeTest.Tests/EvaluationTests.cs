@@ -96,7 +96,9 @@ public sealed class EvaluationTests
         var evaluator = new LongTermEvaluator();
         var report = evaluator.Evaluate([decision, next], metrics, prices, "TRI", 5000m, 3, 10m, 10m, 20m);
         Assert.Equal(["SYNTH"], report.Periods[0].Securities);
-        Assert.Equal(19.4m, report.TotalNetReturnPercent);
+        decimal funded = 5000m / 1.001m;
+        decimal afterSale = funded * 1.2m * 0.999m - 20m;
+        Assert.Equal((afterSale / 5000m - 1m) * 100m, report.TotalNetReturnPercent);
         Assert.Equal(5m, report.BenchmarkTriReturnPercent);
         Assert.Throws<InvalidDataException>(() => evaluator.Evaluate([decision, next], metrics,
             prices.Where(p => p.SecurityId != "SYNTH" || p.CloseAt != exit).ToArray(),

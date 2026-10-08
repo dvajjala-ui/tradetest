@@ -50,6 +50,7 @@ export function parseSnapshot(input) {
   const long = record(value.longTerm, 'Long term');
   fields(long, ['strategyVersion', 'evidenceNote'], ['initialCapital', 'finalCapital', 'totalNetReturnPercent', 'benchmarkTriReturnPercent', 'maximumRebalanceDrawdownPercent']);
   if (typeof long.pointInTimeUniverseSupplied !== 'boolean') throw new Error('Invalid universe evidence flag.');
+  if (long.investableBenchmark != null) fields(record(long.investableBenchmark, 'Fund benchmark'), ['name', 'evidenceNote'], ['netReturnPercent', 'tradingCostsRupees', 'observations', 'maximumObservedDrawdownPercent']);
   rows(long.periods, 'periods', row => { fields(row, ['decisionAt', 'nextDecisionAt'], ['grossReturnPercent', 'costPercent', 'netReturnPercent', 'benchmarkTriReturnPercent']); if (!Array.isArray(row.securities) || row.securities.some((/** @type {unknown} */ id) => typeof id !== 'string')) throw new Error('Invalid securities.'); });
   const research = record(value.research, 'Research');
   fields(research, ['asOf', 'packetHash']);
@@ -62,6 +63,14 @@ export function parseSnapshot(input) {
   const comparisons = record(performance.Comparisons, 'Comparisons');
   for (const key of ['replay', 'import']) fields(record(comparisons[key], key), [], ['MedianBeforeMs', 'MedianAfterMs', 'ElapsedReductionPercent', 'ThroughputMultiplier']);
   rows(value.gates, 'gates', row => fields(row, ['id', 'title', 'state', 'detail']));
+  if (value.returnAdjustments != null) {
+    const adjustments = record(value.returnAdjustments, 'Return adjustments');
+    fields(adjustments, ['builderVersion', 'inputSha256', 'evidenceNote']);
+    rows(adjustments.prices, 'adjusted prices', row => {
+      fields(row, ['securityId', 'closeAt', 'firstKnownAt'], ['adjustedTotalReturnClose']);
+      if (typeof row.isTerminal !== 'boolean' || row.terminalReason !== null && typeof row.terminalReason !== 'string' || !Array.isArray(row.sourceEvidenceIds) || row.sourceEvidenceIds.some((/** @type {unknown} */ id) => typeof id !== 'string')) throw new Error('Invalid terminal outcome or return citations.');
+    });
+  }
   return /** @type {import('./types.ts').Snapshot} */ (value);
 }
 

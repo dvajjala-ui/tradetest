@@ -35,6 +35,6 @@ dotnet run --project src/TradeTest.Cli -- replay fixtures/synthetic-bars.json re
 dotnet run --project src/TradeTest.Cli -- evaluate-walk-forward fixtures/synthetic-walk-forward.json
 ~~~
 
-Every bundled source, price, listing, session, and company is synthetic. The new market reference records validate metadata and timing; they do not populate an actual NSE/BSE universe. Long-term prices still require supplied total-return adjustments, including corporate actions and delisting outcomes. The gate status and next work are tracked in [the implementation status](16-implementation-status.md).
+Every bundled source, price, listing, session, and company is synthetic. The new market reference records validate metadata and timing; they do not populate an actual NSE/BSE universe. A later increment adds the [total-return builder and explicit delisting outcomes](19-total-return-and-benchmarks.md); licensed inputs and independent reconciliation remain. The gate status and next work are tracked in [the implementation status](16-implementation-status.md).
 
 Malformed JSON and inputs that cannot be converted into the typed batch are rejected before import; their parse failures are not stored in the quarantine table. Existing prototype rows remain intact during the additive schema update, but only imports made through the new batch API have retry/audit metadata.

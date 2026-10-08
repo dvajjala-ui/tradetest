@@ -39,6 +39,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 17. [Implementation status and next gates](docs/16-implementation-status.md)
 18. [Optimization measurements and new features](docs/17-optimization-and-features.md)
 19. [Vercel dashboard and local runtime](docs/18-deployment-and-runtime.md)
+20. [Total returns, terminal outcomes and fund benchmarks](docs/19-total-return-and-benchmarks.md)
 
 Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
 
@@ -64,6 +65,7 @@ dotnet run --project src/TradeTest.Cli -- demo
 dotnet run --project src/TradeTest.Cli -- evaluate-study fixtures/synthetic-study.json
 dotnet run --project src/TradeTest.Cli -- evaluate-walk-forward fixtures/synthetic-walk-forward.json
 dotnet run --project src/TradeTest.Cli -- evaluate-long-term fixtures/synthetic-long-term.json
+dotnet run --project src/TradeTest.Cli -- build-total-return fixtures/synthetic-corporate-actions.json
 ~~~
 
 To inspect the dated research example locally:

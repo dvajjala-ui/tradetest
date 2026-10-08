@@ -1,0 +1,109 @@
+{
+  "SecurityId": "SYNTH-ONE",
+  "Closes": [
+    {
+      "ObservationId": "close-5",
+      "SecurityId": "SYNTH-ONE",
+      "CloseAt": "2026-01-05T15:30:00+05:30",
+      "FirstKnownAt": "2026-01-05T15:31:00+05:30",
+      "CloseRupees": 100,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ObservationId": "close-6",
+      "SecurityId": "SYNTH-ONE",
+      "CloseAt": "2026-01-06T15:30:00+05:30",
+      "FirstKnownAt": "2026-01-06T15:31:00+05:30",
+      "CloseRupees": 50,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ObservationId": "close-7",
+      "SecurityId": "SYNTH-ONE",
+      "CloseAt": "2026-01-07T15:30:00+05:30",
+      "FirstKnownAt": "2026-01-07T15:31:00+05:30",
+      "CloseRupees": 25,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ObservationId": "close-8",
+      "SecurityId": "SYNTH-ONE",
+      "CloseAt": "2026-01-08T15:30:00+05:30",
+      "FirstKnownAt": "2026-01-08T15:31:00+05:30",
+      "CloseRupees": 24,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    }
+  ],
+  "Actions": [
+    {
+      "ActionId": "split",
+      "SecurityId": "SYNTH-ONE",
+      "Kind": "Split",
+      "EffectiveAt": "2026-01-06T09:15:00+05:30",
+      "FirstKnownAt": "2026-01-04T00:00:00Z",
+      "Sequence": 0,
+      "SharesAfterPerShareBefore": 2,
+      "CashRupeesPerShareBefore": 0,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ActionId": "bonus",
+      "SecurityId": "SYNTH-ONE",
+      "Kind": "Bonus",
+      "EffectiveAt": "2026-01-07T09:15:00+05:30",
+      "FirstKnownAt": "2026-01-04T00:00:00Z",
+      "Sequence": 0,
+      "SharesAfterPerShareBefore": 2,
+      "CashRupeesPerShareBefore": 0,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ActionId": "dividend",
+      "SecurityId": "SYNTH-ONE",
+      "Kind": "CashDividend",
+      "EffectiveAt": "2026-01-08T09:15:00+05:30",
+      "FirstKnownAt": "2026-01-04T00:00:00Z",
+      "Sequence": 0,
+      "SharesAfterPerShareBefore": 1,
+      "CashRupeesPerShareBefore": 1,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "ActionId": "write-off",
+      "SecurityId": "SYNTH-ONE",
+      "Kind": "TerminalWriteOff",
+      "EffectiveAt": "2026-01-09T09:15:00+05:30",
+      "FirstKnownAt": "2026-01-04T00:00:00Z",
+      "Sequence": 0,
+      "SharesAfterPerShareBefore": 0,
+      "CashRupeesPerShareBefore": 0,
+      "SourceUrl": "https://example.com/synthetic-corporate-actions",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "Verification": "Verified"
+    }
+  ],
+  "Coverage": {
+    "SecurityId": "SYNTH-ONE",
+    "FromExclusive": "2026-01-04T00:00:00Z",
+    "ThroughInclusive": "2026-01-09T15:30:00+05:30",
+    "FirstKnownAt": "2026-01-09T16:00:00+05:30",
+    "SourceUrl": "https://example.com/synthetic-corporate-actions",
+    "LicenceId": "SYNTHETIC_TEST_ONLY",
+    "Verification": "Verified"
+  },
+  "AsOf": "2026-01-10T00:00:00Z"
+}

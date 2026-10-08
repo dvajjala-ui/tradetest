@@ -73,7 +73,16 @@ static async Task<int> MainAsync(string[] args)
                     ?? throw new InvalidDataException("Long-term input JSON is empty.");
                 Print(new LongTermEvaluator().Evaluate(input.DecisionTimes, input.Metrics, input.Prices,
                     input.BenchmarkSecurityId, input.InitialCapital, input.MaxHoldings,
-                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding, input.ReferenceData), json);
+                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding, input.ReferenceData, input.ReturnDataAsOf, input.InvestableBenchmark), json);
+                return 0;
+            }
+            case ["build-total-return", var inputPath]:
+            {
+                string content = await File.ReadAllTextAsync(inputPath);
+                var input = JsonSerializer.Deserialize<TotalReturnBuildInput>(content, json)
+                    ?? throw new InvalidDataException("Total-return input is empty.");
+                Print(new { InputFileSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))).ToLowerInvariant(),
+                    Report = new TotalReturnBuilder().Build(input) }, json);
                 return 0;
             }
             case ["replay", _, _, _] or ["replay", _, _, _, _]:
@@ -140,11 +149,11 @@ static async Task<int> MainAsync(string[] args)
                 return 0;
             }
             default:
-                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
+                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | build-total-return <input.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
                 return 2;
         }
     }
-    catch (Exception ex) when (ex is ArgumentException or InvalidDataException or InvalidOperationException or JsonException or IOException or FormatException or SqliteException)
+    catch (Exception ex) when (ex is ArgumentException or InvalidDataException or InvalidOperationException or JsonException or IOException or FormatException or SqliteException or OverflowException)
     {
         Console.Error.WriteLine($"{ex.GetType().Name}: {ex.Message}");
         return 1;
