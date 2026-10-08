@@ -1,0 +1,199 @@
+{
+  "Sessions": [
+    [
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-05T09:15:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100,
+        "High": 100.3,
+        "Low": 99.9,
+        "Close": 100.1,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-05T09:20:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.1,
+        "High": 100.5,
+        "Low": 100,
+        "Close": 100.4,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-05T09:25:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.4,
+        "High": 100.6,
+        "Low": 100.2,
+        "Close": 100.5,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-05T09:30:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.5,
+        "High": 101.1,
+        "Low": 100.4,
+        "Close": 101,
+        "Volume": 2000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-05T09:35:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.99,
+        "High": 101.9,
+        "Low": 100.8,
+        "Close": 101.7,
+        "Volume": 1500,
+        "IsComplete": true
+      }
+    ],
+    [
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-06T09:15:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100,
+        "High": 100.3,
+        "Low": 99.9,
+        "Close": 100.1,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-06T09:20:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.1,
+        "High": 100.5,
+        "Low": 100,
+        "Close": 100.4,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-06T09:25:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.4,
+        "High": 100.6,
+        "Low": 100.2,
+        "Close": 100.5,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-06T09:30:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.5,
+        "High": 101.1,
+        "Low": 100.4,
+        "Close": 101,
+        "Volume": 2000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-06T09:35:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.99,
+        "High": 101.9,
+        "Low": 100.8,
+        "Close": 101.7,
+        "Volume": 1500,
+        "IsComplete": true
+      }
+    ],
+    [
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-07T09:15:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100,
+        "High": 100.3,
+        "Low": 99.9,
+        "Close": 100.1,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-07T09:20:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.1,
+        "High": 100.5,
+        "Low": 100,
+        "Close": 100.4,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-07T09:25:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.4,
+        "High": 100.6,
+        "Low": 100.2,
+        "Close": 100.5,
+        "Volume": 1000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-07T09:30:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.5,
+        "High": 101.1,
+        "Low": 100.4,
+        "Close": 101,
+        "Volume": 2000,
+        "IsComplete": true
+      },
+      {
+        "SecurityId": "SYNTH-ONE",
+        "StartsAt": "2026-01-07T09:35:00+05:30",
+        "Interval": "00:05:00",
+        "Open": 100.99,
+        "High": 101.9,
+        "Low": 100.8,
+        "Close": 101.7,
+        "Volume": 1500,
+        "IsComplete": true
+      }
+    ]
+  ],
+  "Config": {
+    "InitialCash": 5000,
+    "SpreadBps": 5,
+    "SlippageBps": 2,
+    "MaxFillQuantityPerBar": 2147483647,
+    "SessionEndLocalTime": "09:40:00",
+    "Policy": {
+      "MaxPositionRupees": 5000,
+      "MaxRiskPerTradeRupees": 50,
+      "MaxDailyLossRupees": 100,
+      "MaxTradesPerSession": 1,
+      "MinimumRewardRisk": 1.5,
+      "MaxSpreadBps": 30,
+      "MaxEntryDeviationBps": 5,
+      "MaxQuoteAge": "00:00:30",
+      "Version": "synthetic-study-v1"
+    }
+  },
+  "Plan": {
+    "TrainingEndExclusive": "2026-01-06",
+    "ValidationEndExclusive": "2026-01-07",
+    "HoldoutEndExclusive": "2026-01-08",
+    "CostStressMultiplier": 1.1
+  }
+}

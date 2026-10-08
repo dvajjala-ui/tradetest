@@ -1,0 +1,24 @@
+{
+  "DecisionTimes": ["2026-01-05T00:00:00Z", "2026-04-06T00:00:00Z"],
+  "BenchmarkSecurityId": "SYNTH-TRI",
+  "InitialCapital": 5000,
+  "MaxHoldings": 3,
+  "EntryCostBps": 10,
+  "ExitCostBps": 10,
+  "FixedSellChargePerHolding": 20,
+  "Metrics": [
+    { "SecurityId": "SYNTH-ONE", "Kind": "RevenueGrowth3YPercent", "Value": 18, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F1", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "ReturnOnCapitalPercent", "Value": 20, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F2", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "FreeCashFlowMarginPercent", "Value": 8, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F3", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "NetDebtToEbitda", "Value": 0.4, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F4", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "ShareDilution3YPercent", "Value": 1, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F5", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "Momentum12MPercent", "Value": 15, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F6", "Verification": "Verified" },
+    { "SecurityId": "SYNTH-ONE", "Kind": "AverageDailyTurnoverRupees", "Value": 12000000, "FirstKnownAt": "2026-01-02T00:00:00Z", "SourceFactId": "SYNTH-F7", "Verification": "Verified" }
+  ],
+  "Prices": [
+    { "SecurityId": "SYNTH-TRI", "CloseAt": "2026-01-06T10:00:00Z", "FirstKnownAt": "2026-01-06T11:00:00Z", "AdjustedTotalReturnClose": 100, "AdjustmentVersion": "synthetic-v1" },
+    { "SecurityId": "SYNTH-TRI", "CloseAt": "2026-04-07T10:00:00Z", "FirstKnownAt": "2026-04-07T11:00:00Z", "AdjustedTotalReturnClose": 105, "AdjustmentVersion": "synthetic-v1" },
+    { "SecurityId": "SYNTH-ONE", "CloseAt": "2026-01-06T10:00:00Z", "FirstKnownAt": "2026-01-06T11:00:00Z", "AdjustedTotalReturnClose": 100, "AdjustmentVersion": "synthetic-v1" },
+    { "SecurityId": "SYNTH-ONE", "CloseAt": "2026-04-07T10:00:00Z", "FirstKnownAt": "2026-04-07T11:00:00Z", "AdjustedTotalReturnClose": 120, "AdjustmentVersion": "synthetic-v1" }
+  ]
+}

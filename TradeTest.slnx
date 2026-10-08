@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TradeTest.Application/TradeTest.Application.csproj" />
+    <Project Path="src/TradeTest.Cli/TradeTest.Cli.csproj" />
+    <Project Path="src/TradeTest.Domain/TradeTest.Domain.csproj" />
+    <Project Path="src/TradeTest.Infrastructure/TradeTest.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TradeTest.Tests/TradeTest.Tests.csproj" />
+  </Folder>
+</Solution>

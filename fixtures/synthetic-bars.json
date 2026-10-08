@@ -1,0 +1,7 @@
+[
+  { "SecurityId": "SYNTH-ONE", "StartsAt": "2026-01-05T09:15:00+05:30", "Interval": "00:05:00", "Open": 100, "High": 100.3, "Low": 99.9, "Close": 100.1, "Volume": 1000, "IsComplete": true },
+  { "SecurityId": "SYNTH-ONE", "StartsAt": "2026-01-05T09:20:00+05:30", "Interval": "00:05:00", "Open": 100.1, "High": 100.5, "Low": 100, "Close": 100.4, "Volume": 1000, "IsComplete": true },
+  { "SecurityId": "SYNTH-ONE", "StartsAt": "2026-01-05T09:25:00+05:30", "Interval": "00:05:00", "Open": 100.4, "High": 100.6, "Low": 100.2, "Close": 100.5, "Volume": 1000, "IsComplete": true },
+  { "SecurityId": "SYNTH-ONE", "StartsAt": "2026-01-05T09:30:00+05:30", "Interval": "00:05:00", "Open": 100.5, "High": 101.1, "Low": 100.4, "Close": 101, "Volume": 2000, "IsComplete": true },
+  { "SecurityId": "SYNTH-ONE", "StartsAt": "2026-01-05T09:35:00+05:30", "Interval": "00:05:00", "Open": 100.99, "High": 101.9, "Low": 100.8, "Close": 101.7, "Volume": 1500, "IsComplete": true }
+]

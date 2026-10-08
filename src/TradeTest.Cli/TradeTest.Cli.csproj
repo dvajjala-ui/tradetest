@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TradeTest.Domain\TradeTest.Domain.csproj" />
+    <ProjectReference Include="..\TradeTest.Application\TradeTest.Application.csproj" />
+    <ProjectReference Include="..\TradeTest.Infrastructure\TradeTest.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

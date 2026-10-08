@@ -1,6 +1,6 @@
-# TradeTest — India trading and long-term investing research plan
+# TradeTest — India trading and long-term investing research
 
-This repository records the original trading-bot discussion and the expanded implementation proposal. **The current proposal for approval is [docs/12-master-implementation-plan.md](docs/12-master-implementation-plan.md).** This is a planning repository; no trading software or live orders have been implemented.
+This repository contains the [approved G0–G4 plan](docs/12-master-implementation-plan.md), its supporting research, and an initial **offline** .NET implementation. It can replay synthetic market sessions, record a tamper-evident event journal, store dated research, and run preliminary strategy evaluations. It cannot connect to a broker or place orders.
 
 ## Current concept
 
@@ -35,8 +35,30 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 13. [Expanded implementation proposal](docs/12-master-implementation-plan.md)
 14. [Broker and cost report](docs/13-broker-and-cost-report.md)
 15. [Research ledger and failure lessons](docs/14-research-ledger-and-failure-lessons.md)
+16. [Source register and data contract](docs/15-source-register-and-data-contract.md)
+17. [Implementation status and next gates](docs/16-implementation-status.md)
 
-Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–14.
+Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–16.
+
+## Run the offline prototype
+
+Install the .NET 10 SDK, then run from the repository root:
+
+~~~bash
+dotnet test TradeTest.slnx
+dotnet run --project src/TradeTest.Cli -- demo
+dotnet run --project src/TradeTest.Cli -- evaluate-study fixtures/synthetic-study.json
+dotnet run --project src/TradeTest.Cli -- evaluate-long-term fixtures/synthetic-long-term.json
+~~~
+
+To inspect the dated research example locally:
+
+~~~bash
+dotnet run --project src/TradeTest.Cli -- import-research fixtures/synthetic-research.json research.sqlite
+dotnet run --project src/TradeTest.Cli -- research research.sqlite 2026-04-01T00:00:00Z SYNTH-ONE revenue
+~~~
+
+All bundled prices, documents, companies, and returns are **synthetic**. The example ₹5,000 is a research configuration, not an activated trading budget. The CLI has no live broker adapter, API credentials, or order route. Repeating an import into the same SQLite database will reject duplicate IDs; use a fresh database for each example run.
 
 ## Core architectural principle
 
@@ -53,6 +75,6 @@ The risk engine can reject any AI recommendation.
 
 ## Important status
 
-This repository currently contains the **planning/research baseline only**. No production trading logic should be considered validated until it has passed backtesting, live-data paper trading, cost/slippage modelling, fault testing and explicit live-trading safeguards.
+This is an **offline prototype**, not a validated trading system or evidence of profitability. [Implementation status](docs/16-implementation-status.md) tracks completed code and the missing licensed data, historical validation, live-feed paper sessions, fault drills, and broker reconciliation.
 
 Model prices, broker charges, rate limits and API rules can change. Re-verify them before implementation or deployment.
