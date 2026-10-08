@@ -71,6 +71,12 @@ export function parseSnapshot(input) {
       if (typeof row.isTerminal !== 'boolean' || row.terminalReason !== null && typeof row.terminalReason !== 'string' || !Array.isArray(row.sourceEvidenceIds) || row.sourceEvidenceIds.some((/** @type {unknown} */ id) => typeof id !== 'string')) throw new Error('Invalid terminal outcome or return citations.');
     });
   }
+  if (value.rankingPerformance != null) {
+    const ranking = record(value.rankingPerformance, 'Ranking performance');
+    fields(ranking, ['Caveat'], ['MedianIndexBuildMs', 'MedianIndexedWithBuildMs']);
+    fields(record(ranking.Workload, 'Ranking workload'), [], ['Companies', 'MetricRows', 'QueriesPerTrial']);
+    fields(record(ranking.Comparison, 'Ranking comparison'), [], ['MedianBeforeMs', 'MedianAfterMs', 'ElapsedReductionPercent', 'ThroughputMultiplier']);
+  }
   return /** @type {import('./types.ts').Snapshot} */ (value);
 }
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tradetest-dashboard-v1",
-  "generatedAt": "2026-10-08T14:42:36.0256911+00:00",
+  "generatedAt": "2026-10-08T15:22:09.7158263+00:00",
   "dataKind": "Synthetic",
   "mode": "PAPER / OFFLINE",
   "evidenceNote": "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
@@ -23,7 +23,7 @@
     },
     {
       "file": "fixtures/synthetic-long-term.json",
-      "sha256": "b1c6bc42e2700e50258f5e360e5b28c6418667757f36132da3dbe481345fadb0"
+      "sha256": "597e7775605ee3aaf4e0d9a758a46d6988a6ad768edf01acd6d13a0cbc1d60f6"
     },
     {
       "file": "fixtures/synthetic-corporate-actions.json",
@@ -32,6 +32,10 @@
     {
       "file": "benchmarks/results/2026-10-08.json",
       "sha256": "a101d9bc0544b6a04832252c679c11bacad179c0523f156cc8fbc32039ee524c"
+    },
+    {
+      "file": "benchmarks/results/2026-10-08-ranking.json",
+      "sha256": "3a14ef19f8bd9c8aede2166753d705ba79da1f48852b0cd8dfacdda16232bc98"
     }
   ],
   "bars": [
@@ -665,7 +669,7 @@
         "terminalSecurities": []
       }
     ],
-    "evidenceNote": "Verified metrics known by each decision; next supplied close execution; equal-value fractional research holdings with complete liquidation at each rebalance. Entry fees reduce invested cash, exit fees use sale proceeds. Explicit terminal values are carried as cash without broker sale fees. CostPercent measures return drag, while TradingCostsRupees reports cash fees. Drawdown is measured only at rebalances. TRI is not an investable after-fee fund return. Depletion stays at zero, with unfunded exit charges disclosed; these are assumptions, not executable account orders.",
+    "evidenceNote": "Source links, hashes and dated correction withdrawal were validated. Dated metric selection; next supplied close execution; equal-value fractional research holdings with complete liquidation at each rebalance. Entry fees reduce invested cash, exit fees use sale proceeds. Explicit terminal values are carried as cash without broker sale fees. CostPercent measures return drag, while TradingCostsRupees reports cash fees. Drawdown is measured only at rebalances. TRI is not an investable after-fee fund return. Depletion stays at zero, with unfunded exit charges disclosed; these are assumptions, not executable account orders.",
     "pointInTimeUniverseSupplied": false,
     "returnDataAsOf": "2026-04-07T11:00:00+00:00",
     "portfolioDepleted": false,
@@ -685,7 +689,8 @@
       "sourceUrl": "https://example.com/synthetic-fund",
       "licenceId": "SYNTHETIC_TEST_ONLY",
       "evidenceNote": "Passive buy-and-hold on supplied total-return levels net of fund expenses, with separately funded entry and exit costs. No second expense-ratio subtraction. Fractional research units; no tax or execution-capacity model. Drawdown uses supplied observations and can miss intraperiod losses. Annualization is omitted for periods shorter than one year. Verified source metadata is supplied by the caller and requires independent reconciliation."
-    }
+    },
+    "sourceProvenanceValidated": true
   },
   "research": {
     "asOf": "2026-04-01T00:00:00+00:00",
@@ -1127,5 +1132,73 @@
       }
     ],
     "evidenceNote": "Forward chain starts at 100; regular cash dividends are reinvested at the supplied ex-date close. Split/bonus terms apply in explicit sequence order. Terminal cash is carried without subsequent reinvestment. Gross pre-tax research returns; no rights, merger, demerger, withholding or settlement-delay model. Source coverage is an input assertion and requires vendor reconciliation."
+  },
+  "rankingPerformance": {
+    "CheckedAtUtc": "2026-10-08T15:09:38.737679\u002B00:00",
+    "ComparedPaths": "LongTermRanker scan vs MetricHistoryIndex; same quality-growth-momentum-v1 score",
+    "Workload": {
+      "Companies": 3000,
+      "MetricRows": 336000,
+      "QueriesPerTrial": 24,
+      "RevisionsPerCompany": 16
+    },
+    "Method": "One process; 16 revisions of seven metrics per company, 24 dated queries. Both paths warm once; query order alternates. Timings exclude data generation, output hashing and index construction; index build is separately reported. Synthetic verified labels, no source-document validation or network.",
+    "Trials": [
+      {
+        "Workload": "synthetic-dated-company-ranking",
+        "Companies": 3000,
+        "MetricRows": 336000,
+        "Queries": 24,
+        "IndexBuildMs": 432.3515,
+        "ScanElapsedMs": 1063.0913,
+        "IndexedElapsedMs": 201.73930000000001,
+        "ScanAllocatedBytesPerQuery": 19919083,
+        "IndexedAllocatedBytesPerQuery": 2288293,
+        "EveryOutputHashMatched": true,
+        "Runtime": ".NET 10.0.12",
+        "Method": "One process; 16 revisions of seven metrics per company, 24 dated queries. Both paths warm once; query order alternates. Timings exclude data generation, output hashing and index construction; index build is separately reported. Synthetic verified labels, no source-document validation or network."
+      },
+      {
+        "Workload": "synthetic-dated-company-ranking",
+        "Companies": 3000,
+        "MetricRows": 336000,
+        "Queries": 24,
+        "IndexBuildMs": 220.3586,
+        "ScanElapsedMs": 938.2525999999999,
+        "IndexedElapsedMs": 183.4634,
+        "ScanAllocatedBytesPerQuery": 19894933,
+        "IndexedAllocatedBytesPerQuery": 2277293,
+        "EveryOutputHashMatched": true,
+        "Runtime": ".NET 10.0.12",
+        "Method": "One process; 16 revisions of seven metrics per company, 24 dated queries. Both paths warm once; query order alternates. Timings exclude data generation, output hashing and index construction; index build is separately reported. Synthetic verified labels, no source-document validation or network."
+      },
+      {
+        "Workload": "synthetic-dated-company-ranking",
+        "Companies": 3000,
+        "MetricRows": 336000,
+        "Queries": 24,
+        "IndexBuildMs": 232.7875,
+        "ScanElapsedMs": 1014.4166,
+        "IndexedElapsedMs": 203.8109,
+        "ScanAllocatedBytesPerQuery": 19894934,
+        "IndexedAllocatedBytesPerQuery": 2277293,
+        "EveryOutputHashMatched": true,
+        "Runtime": ".NET 10.0.12",
+        "Method": "One process; 16 revisions of seven metrics per company, 24 dated queries. Both paths warm once; query order alternates. Timings exclude data generation, output hashing and index construction; index build is separately reported. Synthetic verified labels, no source-document validation or network."
+      }
+    ],
+    "Comparison": {
+      "MedianBeforeMs": 1014.4166,
+      "MedianAfterMs": 201.73930000000001,
+      "ElapsedReductionPercent": 80.11277615133665,
+      "ThroughputMultiplier": 5.028353920133558,
+      "MedianAllocationBeforeBytes": 19894934,
+      "MedianAllocationAfterBytes": 2277293,
+      "AllocationReductionPercent": 88.55340258982513
+    },
+    "MedianIndexBuildMs": 232.7875,
+    "MedianIndexedWithBuildMs": 436.59839999999997,
+    "EveryOutputHashMatched": true,
+    "Caveat": "Synthetic, local compute on a shared two-CPU container. Query timings exclude index construction, source-document validation, output serialization/hashing, network and AI. The index is useful for repeated dated queries; source histories still need memory and validation. No trading latency or market edge was measured."
   }
 }

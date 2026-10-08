@@ -10,7 +10,7 @@ using TradeTest.Infrastructure;
 
 if (args.Length != 2 || !int.TryParse(args[1], out int count) || count is < 1 or > 100_000)
 {
-    Console.Error.WriteLine("Usage: replay <sessions> | import <documents> | regression 1");
+    Console.Error.WriteLine("Usage: replay <sessions> | import <documents> | ranking <companies> | regression 1");
     return 2;
 }
 object report;
@@ -86,6 +86,47 @@ switch (args[0])
             Regression("rejected", bars, config with { Policy = config.Policy with { MinimumRewardRisk = 3m } }),
             Regression("partial", bars, config with { MaxFillQuantityPerBar = 2 })
         };
+        break;
+    }
+    case "ranking":
+    {
+        if (count > 10_000) throw new ArgumentException("Ranking workload is limited to 10,000 synthetic companies.");
+        var at = DateTimeOffset.Parse("2021-01-01T00:00:00Z");
+        var rows = Enumerable.Range(0, count).SelectMany(company => Enumerable.Range(0, 16).SelectMany(revision =>
+            Enum.GetValues<CompanyMetricKind>().Select(kind => new CompanyMetric("SYNTH-" + company, kind,
+                kind switch { CompanyMetricKind.AverageDailyTurnoverRupees => 12_000_000m, CompanyMetricKind.NetDebtToEbitda => 0.4m,
+                    _ => 10m + company % 13 + revision % 3 }, at.AddDays(revision * 30), $"fact-{company}-{revision}-{kind}", VerificationState.Verified)))).ToArray();
+        var ranker = new LongTermRanker();
+        long compiledAt = Stopwatch.GetTimestamp();
+        var index = new MetricHistoryIndex(rows);
+        double buildMs = Stopwatch.GetElapsedTime(compiledAt).TotalMilliseconds;
+        ranker.Rank(rows, at.AddDays(150));
+        index.RankAt(at.AddDays(150));
+        var scanMs = new double[24];
+        var indexedMs = new double[24];
+        long scanAllocated = 0, indexedAllocated = 0;
+        for (int query = 0; query < scanMs.Length; query++)
+        {
+            var asOf = at.AddDays(query * 15);
+            string? baselineHash = null, indexedHash = null;
+            foreach (bool indexed in query % 2 == 0 ? new[] { false, true } : new[] { true, false })
+            {
+                long allocatedAt = GC.GetAllocatedBytesForCurrentThread();
+                long started = Stopwatch.GetTimestamp();
+                var scores = indexed ? index.RankAt(asOf) : ranker.Rank(rows, asOf);
+                double elapsed = Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+                long allocated = GC.GetAllocatedBytesForCurrentThread() - allocatedAt;
+                string hash = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(scores)));
+                if (indexed) { indexedMs[query] = elapsed; indexedAllocated += allocated; indexedHash = hash; }
+                else { scanMs[query] = elapsed; scanAllocated += allocated; baselineHash = hash; }
+            }
+            if (baselineHash != indexedHash) throw new InvalidOperationException("Indexed ranking changed dated scores or evidence IDs.");
+        }
+        report = new { Workload = "synthetic-dated-company-ranking", Companies = count, MetricRows = rows.Length,
+            Queries = scanMs.Length, IndexBuildMs = buildMs, ScanElapsedMs = scanMs.Sum(), IndexedElapsedMs = indexedMs.Sum(),
+            ScanAllocatedBytesPerQuery = scanAllocated / scanMs.Length, IndexedAllocatedBytesPerQuery = indexedAllocated / indexedMs.Length,
+            EveryOutputHashMatched = true, Runtime = RuntimeInformation.FrameworkDescription,
+            Method = "One process; 16 revisions of seven metrics per company, 24 dated queries. Both paths warm once; query order alternates. Timings exclude data generation, output hashing and index construction; index build is separately reported. Synthetic verified labels, no source-document validation or network." };
         break;
     }
     default: return 2;

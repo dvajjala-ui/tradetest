@@ -40,6 +40,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 18. [Optimization measurements and new features](docs/17-optimization-and-features.md)
 19. [Vercel dashboard and local runtime](docs/18-deployment-and-runtime.md)
 20. [Total returns, terminal outcomes and fund benchmarks](docs/19-total-return-and-benchmarks.md)
+21. [Dated ranking optimization and source provenance](docs/20-ranking-index-and-provenance.md)
 
 Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
 
@@ -95,9 +96,10 @@ All bundled prices, documents, companies, calendars, and returns are **synthetic
 dotnet build TradeTest.slnx -c Release
 dotnet run --no-build -c Release --project benchmarks/TradeTest.Benchmarks -- replay 5000
 dotnet run --no-build -c Release --project benchmarks/TradeTest.Benchmarks -- import 5000
+dotnet run --no-build -c Release --project benchmarks/TradeTest.Benchmarks -- ranking 3000
 ~~~
 
-The [measured comparison](docs/17-optimization-and-features.md) records workload, runtime, raw trials, and limits. These timings measure local computation and SQLite imports.
+The [replay/import comparison](docs/17-optimization-and-features.md) and [ranking comparison](docs/20-ranking-index-and-provenance.md) record workloads, runtime, raw trials, and limits. These timings measure local computation and SQLite imports.
 
 ## Core architectural principle
 

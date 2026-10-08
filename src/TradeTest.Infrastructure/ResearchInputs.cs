@@ -60,7 +60,9 @@ public sealed record LongTermInput(
     decimal FixedSellChargePerHolding,
     MarketReferenceData? ReferenceData = null,
     DateTimeOffset? ReturnDataAsOf = null,
-    InvestableBenchmarkInput? InvestableBenchmark = null);
+    InvestableBenchmarkInput? InvestableBenchmark = null,
+    IReadOnlyList<SourceFact>? EvidenceFacts = null,
+    IReadOnlyList<SourceDocument>? EvidenceDocuments = null);
 
 public sealed record IntradayStudyInput(
     IReadOnlyList<IReadOnlyList<MarketBar>> Sessions,

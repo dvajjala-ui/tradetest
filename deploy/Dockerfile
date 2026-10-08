@@ -12,9 +12,9 @@ RUN --mount=type=secret,id=proxy_ca \
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build /publish ./
-COPY fixtures/ /app/research/fixtures/
-COPY benchmarks/results/ /app/research/benchmarks/results/
+COPY --from=build --chmod=0555 /publish ./
+COPY --chmod=0555 fixtures/ /app/research/fixtures/
+COPY --chmod=0555 benchmarks/results/ /app/research/benchmarks/results/
 ENV TRADETEST_ROOT=/app/research
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 USER $APP_UID

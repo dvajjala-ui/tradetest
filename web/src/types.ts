@@ -17,4 +17,5 @@ export interface Snapshot {
   performance: { CheckedAtUtc: string; Method: string; Caveat: string; Comparisons: { replay: Benchmark; import: Benchmark } };
   gates: { id: string; title: string; state: string; detail: string }[];
   returnAdjustments?: { builderVersion: string; inputSha256: string; evidenceNote: string; prices: { securityId: string; closeAt: string; firstKnownAt: string; adjustedTotalReturnClose: number; isTerminal: boolean; terminalReason: string | null; sourceEvidenceIds: string[] }[] } | null;
+  rankingPerformance?: { Comparison: Benchmark; Workload: { Companies: number; MetricRows: number; QueriesPerTrial: number }; MedianIndexBuildMs: number; MedianIndexedWithBuildMs: number; Caveat: string } | null;
 }

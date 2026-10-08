@@ -121,5 +121,79 @@
     "SourceUrl": "https://example.com/synthetic-fund",
     "LicenceId": "SYNTHETIC_TEST_ONLY",
     "Verification": "Verified"
-  }
+  },
+  "EvidenceFacts": [
+    {
+      "FactId": "SYNTH-F1",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Revenue growth was 18 percent.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F2",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Return on capital was 20 percent.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F3",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Free cash flow margin was 8 percent.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F4",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Net debt to EBITDA was 0.4.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F5",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Share dilution was 1 percent.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F6",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Twelve-month momentum was 15 percent.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    },
+    {
+      "FactId": "SYNTH-F7",
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "Claim": "Average daily turnover was 12000000 rupees.",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "Verification": "Verified"
+    }
+  ],
+  "EvidenceDocuments": [
+    {
+      "DocumentId": "SYNTH-REPORT-1",
+      "SecurityId": "SYNTH-ONE",
+      "SourceUrl": "https://example.com/synthetic-report-1",
+      "Publisher": "Synthetic fixture",
+      "PublishedAt": "2026-01-01T00:00:00Z",
+      "FirstKnownAt": "2026-01-02T00:00:00Z",
+      "RetrievedAt": "2026-01-03T00:00:00Z",
+      "LicenceId": "SYNTHETIC_TEST_ONLY",
+      "ParserVersion": "manual-fixture-v1",
+      "SupersedesDocumentId": null,
+      "Content": "Synthetic company report: revenue growth 18 percent; return on capital 20 percent; free cash flow margin 8 percent; net debt to EBITDA 0.4; share dilution 1 percent; twelve-month momentum 15 percent; average daily turnover 12000000 rupees. These are invented numbers for a software test.",
+      "ContentSha256": "512b3b24fa544777735c12bf01d89e6b0409b6b4239a9f957e2df26ba1112254"
+    }
+  ]
 }

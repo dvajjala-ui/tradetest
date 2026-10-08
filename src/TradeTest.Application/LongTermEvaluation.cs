@@ -5,14 +5,13 @@ namespace TradeTest.Application;
 /// <summary>Equal-value fractional research portfolios, funded entry fees and explicit terminal outcomes.</summary>
 public sealed class LongTermEvaluator
 {
-    private readonly LongTermRanker _ranker = new();
-
     public LongTermEvaluationReport Evaluate(
         IReadOnlyList<DateTimeOffset> decisionTimes, IReadOnlyList<CompanyMetric> metrics,
         IReadOnlyList<TotalReturnPrice> prices, string benchmarkSecurityId, decimal initialCapital,
         int maxHoldings, decimal entryCostBps, decimal exitCostBps, decimal fixedSellChargePerHolding,
         MarketReferenceData? referenceData = null, DateTimeOffset? returnDataAsOf = null,
-        InvestableBenchmarkInput? investableBenchmark = null)
+        InvestableBenchmarkInput? investableBenchmark = null, IReadOnlyList<SourceFact>? evidenceFacts = null,
+        IReadOnlyList<SourceDocument>? evidenceDocuments = null)
     {
         if (decisionTimes.Count < 2 || decisionTimes.Zip(decisionTimes.Skip(1)).Any(x => x.First >= x.Second))
             throw new ArgumentException("At least two strictly increasing decision times are required.", nameof(decisionTimes));
@@ -30,6 +29,7 @@ public sealed class LongTermEvaluator
         if (!bySecurity.TryGetValue(benchmarkSecurityId, out var benchmark) || benchmark.Terminal is not null)
             throw new ArgumentException("A non-terminal benchmark series known by the return-data cutoff is required.", nameof(prices));
         var master = referenceData is null ? null : new SecurityMaster(referenceData.Securities);
+        var metricHistory = new MetricHistoryIndex(metrics, evidenceFacts, evidenceDocuments);
         decimal capital = initialCapital, benchmarkGrowth = 1m, peak = capital, drawdown = 0;
         var periods = new List<LongTermPeriodResult>(decisionTimes.Count - 1);
         for (int i = 0; i < decisionTimes.Count - 1; i++)
@@ -43,7 +43,7 @@ public sealed class LongTermEvaluator
             decimal benchmarkReturn = exitBenchmark.AdjustedTotalReturnClose / entryBenchmark.AdjustedTotalReturnClose - 1m;
             benchmarkGrowth *= 1m + benchmarkReturn;
 
-            var selected = capital == 0 ? [] : _ranker.Rank(metrics, decision)
+            var selected = capital == 0 ? [] : metricHistory.RankAt(decision)
                 .Where(s => master is null || master.GetAt(s.SecurityId, decision) is { Segment: var segment } &&
                     segment.Equals("CASH_EQUITY", StringComparison.OrdinalIgnoreCase)).Take(maxHoldings).ToArray();
             decimal openingCapital = capital, grossFactor = selected.Length == 0 ? 1m : 0m;
@@ -86,8 +86,9 @@ public sealed class LongTermEvaluator
         return new LongTermEvaluationReport(LongTermRanker.Version, benchmarkSecurityId, initialCapital,
             capital, (capital / initialCapital - 1m) * 100m, (benchmarkGrowth - 1m) * 100m,
             drawdown, periods,
-            "Verified metrics known by each decision; next supplied close execution; equal-value fractional research holdings with complete liquidation at each rebalance. Entry fees reduce invested cash, exit fees use sale proceeds. Explicit terminal values are carried as cash without broker sale fees. CostPercent measures return drag, while TradingCostsRupees reports cash fees. Drawdown is measured only at rebalances. TRI is not an investable after-fee fund return. Depletion stays at zero, with unfunded exit charges disclosed; these are assumptions, not executable account orders.",
-            referenceData is not null, cutoff, capital == 0m, fund);
+            (metricHistory.ProvenanceValidated ? "Source links, hashes and dated correction withdrawal were validated. " : "Source histories were not supplied; metric verification labels are caller assertions. ") +
+            "Dated metric selection; next supplied close execution; equal-value fractional research holdings with complete liquidation at each rebalance. Entry fees reduce invested cash, exit fees use sale proceeds. Explicit terminal values are carried as cash without broker sale fees. CostPercent measures return drag, while TradingCostsRupees reports cash fees. Drawdown is measured only at rebalances. TRI is not an investable after-fee fund return. Depletion stays at zero, with unfunded exit charges disclosed; these are assumptions, not executable account orders.",
+            referenceData is not null, cutoff, capital == 0m, fund, metricHistory.ProvenanceValidated);
     }
 
     private static void EnsureVersion(TotalReturnPrice entry, TotalReturnPrice exit, string id)

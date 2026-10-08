@@ -119,4 +119,5 @@ public sealed record LongTermEvaluationReport(
     bool PointInTimeUniverseSupplied = false,
     DateTimeOffset? ReturnDataAsOf = null,
     bool PortfolioDepleted = false,
-    InvestableBenchmarkReport? InvestableBenchmark = null);
+    InvestableBenchmarkReport? InvestableBenchmark = null,
+    bool SourceProvenanceValidated = false);

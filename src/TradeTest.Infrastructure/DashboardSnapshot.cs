@@ -16,7 +16,7 @@ public sealed record DashboardSnapshot(string SchemaVersion, DateTimeOffset Gene
     string Mode, string EvidenceNote, IReadOnlyList<SnapshotInput> Inputs, IReadOnlyList<MarketBar> Bars,
     SimulationReport Replay, IntradayStudyReport IntradayStudy, WalkForwardReport WalkForward,
     LongTermEvaluationReport LongTerm, DashboardResearch Research, JsonElement Performance,
-    IReadOnlyList<DashboardGate> Gates, TotalReturnBuildReport? ReturnAdjustments = null);
+    IReadOnlyList<DashboardGate> Gates, TotalReturnBuildReport? ReturnAdjustments = null, JsonElement? RankingPerformance = null);
 
 /// <summary>Exports only bundled synthetic fixtures. Never discovers or publishes a private database.</summary>
 public static class DashboardSnapshotBuilder
@@ -46,7 +46,9 @@ public static class DashboardSnapshotBuilder
         var actionsTask = ResearchJson.ReadAsync<TotalReturnBuildInput>(Path.Combine(fixtures, FixtureFiles[5]), cancellationToken);
         string performancePath = Path.Combine(repositoryRoot, "benchmarks", "results", "2026-10-08.json");
         var performanceTask = ResearchJson.ReadAsync<JsonElement>(performancePath, cancellationToken);
-        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, actionsTask, performanceTask);
+        string rankingPath = Path.Combine(repositoryRoot, "benchmarks", "results", "2026-10-08-ranking.json");
+        var rankingTask = ResearchJson.ReadAsync<JsonElement>(rankingPath, cancellationToken);
+        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, actionsTask, performanceTask, rankingTask);
         var research = await researchTask;
         var study = await studyTask;
         var walk = await walkTask;
@@ -61,6 +63,8 @@ public static class DashboardSnapshotBuilder
         }
         inputs.Add(new SnapshotInput("benchmarks/results/2026-10-08.json",
             Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(performancePath, cancellationToken))).ToLowerInvariant()));
+        inputs.Add(new SnapshotInput("benchmarks/results/2026-10-08-ranking.json",
+            Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(rankingPath, cancellationToken))).ToLowerInvariant()));
         return new DashboardSnapshot(SchemaVersion, DateTimeOffset.UtcNow, "Synthetic", "PAPER / OFFLINE",
             "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
             inputs, await barsTask, new ReplayEngine().Run(await barsTask, ExampleResearch.Config()),
@@ -68,7 +72,8 @@ public static class DashboardSnapshotBuilder
             new WalkForwardEvaluator().Evaluate(walk.Sessions, walk.Config, walk.Plan),
             new LongTermEvaluator().Evaluate(longTerm.DecisionTimes, longTerm.Metrics, longTerm.Prices,
                 longTerm.BenchmarkSecurityId, longTerm.InitialCapital, longTerm.MaxHoldings,
-                longTerm.EntryCostBps, longTerm.ExitCostBps, longTerm.FixedSellChargePerHolding, longTerm.ReferenceData, longTerm.ReturnDataAsOf, longTerm.InvestableBenchmark),
+                longTerm.EntryCostBps, longTerm.ExitCostBps, longTerm.FixedSellChargePerHolding, longTerm.ReferenceData,
+                longTerm.ReturnDataAsOf, longTerm.InvestableBenchmark, longTerm.EvidenceFacts, longTerm.EvidenceDocuments),
             new DashboardResearch(asOf, packet.Hash, packet.Facts, research.Metrics,
                 new LongTermRanker().Rank(research.Metrics, asOf),
                 research.Documents.Select(d => d.ToDocument()).Select(d => new DashboardDocument(d.DocumentId,
@@ -82,6 +87,6 @@ public static class DashboardSnapshotBuilder
                 new("g4", "Live-data paper sessions", "Pending", "Authenticated no-order feed, reconciliation, fault drills and operational sessions remain."),
                 new("g5", "Broker orders", "Not enabled", "Requires separately reviewed integration and evidence gates."),
                 new("g6", "Real-money activation", "Not enabled", "Requires explicit activation and account-specific risk limits.")
-            ], new TotalReturnBuilder().Build(await actionsTask));
+            ], new TotalReturnBuilder().Build(await actionsTask), await rankingTask);
     }
 }

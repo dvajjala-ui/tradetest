@@ -73,7 +73,8 @@ static async Task<int> MainAsync(string[] args)
                     ?? throw new InvalidDataException("Long-term input JSON is empty.");
                 Print(new LongTermEvaluator().Evaluate(input.DecisionTimes, input.Metrics, input.Prices,
                     input.BenchmarkSecurityId, input.InitialCapital, input.MaxHoldings,
-                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding, input.ReferenceData, input.ReturnDataAsOf, input.InvestableBenchmark), json);
+                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding, input.ReferenceData,
+                    input.ReturnDataAsOf, input.InvestableBenchmark, input.EvidenceFacts, input.EvidenceDocuments), json);
                 return 0;
             }
             case ["build-total-return", var inputPath]:
