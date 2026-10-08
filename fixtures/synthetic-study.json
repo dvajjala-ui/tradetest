@@ -187,7 +187,7 @@
       "MaxSpreadBps": 30,
       "MaxEntryDeviationBps": 5,
       "MaxQuoteAge": "00:00:30",
-      "Version": "synthetic-study-v1"
+      "Version": "synthetic-study-v2-fees"
     }
   },
   "Plan": {

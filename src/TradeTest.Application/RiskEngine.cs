@@ -2,8 +2,9 @@ using TradeTest.Domain;
 
 namespace TradeTest.Application;
 
-public sealed class RiskEngine
+public sealed class RiskEngine(ICostModel? costModel = null)
 {
+    private readonly ICostModel _costs = costModel ?? new GrowwIntradayCostModel();
     public RiskDecision Evaluate(TradeCandidate candidate, RiskPolicy policy, RiskContext context)
     {
         var reasons = new List<string>();
@@ -39,9 +40,23 @@ public sealed class RiskEngine
             if (rewardRisk < policy.MinimumRewardRisk) reasons.Add("REWARD_RISK_TOO_LOW");
             decimal affordable = Math.Min(context.AvailableCash, policy.MaxPositionRupees) / limitPrice;
             decimal riskSized = policy.MaxRiskPerTradeRupees / riskPerShare;
-            decimal remainingDailyRisk = (policy.MaxDailyLossRupees + context.RealizedDailyPnl) / riskPerShare;
+            decimal dailyBudget = Math.Max(0m, policy.MaxDailyLossRupees + context.RealizedDailyPnl);
+            decimal remainingDailyRisk = dailyBudget / riskPerShare;
             quantity = (int)Math.Min(int.MaxValue,
                 decimal.Floor(Math.Min(affordable, Math.Min(riskSized, remainingDailyRisk))));
+            // Reserve round-trip charges as well as entry notional and the planned stop loss.
+            // Gaps through the stop can still exceed this estimate; it is not a guaranteed loss ceiling.
+            int low = 0, high = Math.Max(0, quantity);
+            decimal lossBudget = Math.Min(policy.MaxRiskPerTradeRupees, dailyBudget);
+            while (low < high)
+            {
+                int middle = low + (int)(((long)high - low + 1) / 2);
+                decimal fees = _costs.Calculate(limitPrice * middle, candidate.Stop * middle).Total;
+                if (limitPrice * middle + fees <= context.AvailableCash && riskPerShare * middle + fees <= lossBudget)
+                    low = middle;
+                else high = middle - 1;
+            }
+            quantity = low;
             if (quantity <= 0) reasons.Add("INSUFFICIENT_CASH_OR_RISK_BUDGET");
         }
         if (reasons.Count > 0) quantity = 0;

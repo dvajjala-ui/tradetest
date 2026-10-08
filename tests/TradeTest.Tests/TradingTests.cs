@@ -65,8 +65,14 @@ public sealed class TradingTests
         Assert.Contains("POSITION_ALREADY_OPEN", engine.Evaluate(candidate, Policy(),
             context with { HasOpenPosition = true }).Reasons);
         var remaining = engine.Evaluate(candidate, Policy(), context with { RealizedDailyPnl = -90m });
-        Assert.True(remaining.Approved);
-        Assert.Equal(22, remaining.Quantity); // The submitted limit has ₹0.4505/share of stop risk.
+        Assert.False(remaining.Approved); // Remaining ₹10 cannot cover the round-trip charges and planned stop loss.
+        Assert.Equal(0, remaining.Quantity);
+        var limited = engine.Evaluate(candidate, Policy(), context with { RealizedDailyPnl = -80m });
+        Assert.True(limited.Approved);
+        decimal limit = candidate.Entry * (1m + Policy().MaxEntryDeviationBps / 10_000m);
+        decimal costs = new GrowwIntradayCostModel().Calculate(limit * limited.Quantity, candidate.Stop * limited.Quantity).Total;
+        Assert.True((limit - candidate.Stop) * limited.Quantity + costs <= 20m);
+        Assert.False(engine.Evaluate(candidate, Policy(), context with { AvailableCash = limit }).Approved);
         Assert.Contains("ENTRY_PRICE_MOVED", engine.Evaluate(candidate, Policy(),
             context with { Quote = quote with { Ask = 102m } }).Reasons);
     }

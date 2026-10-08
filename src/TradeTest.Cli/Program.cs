@@ -1,5 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Data.Sqlite;
 using TradeTest.Application;
 using TradeTest.Domain;
 using TradeTest.Infrastructure;
@@ -12,6 +15,8 @@ static async Task<int> MainAsync(string[] args)
     {
         PropertyNameCaseInsensitive = true,
         WriteIndented = true,
+        RespectNullableAnnotations = true,
+        RespectRequiredConstructorParameters = true,
         Converters = { new JsonStringEnumConverter() }
     };
     try
@@ -35,20 +40,42 @@ static async Task<int> MainAsync(string[] args)
                 Print(new IntradayStudyEvaluator().Evaluate(input.Sessions, input.Config, input.Plan), json);
                 return 0;
             }
+            case ["evaluate-walk-forward", var studyPath]:
+            {
+                string content = await File.ReadAllTextAsync(studyPath);
+                var input = JsonSerializer.Deserialize<WalkForwardInput>(content, json)
+                    ?? throw new InvalidDataException("Walk-forward input is empty.");
+                Print(new { InputSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))).ToLowerInvariant(),
+                    Report = new WalkForwardEvaluator().Evaluate(input.Sessions, input.Config, input.Plan) }, json);
+                return 0;
+            }
+            case ["universe", var referencePath, var asOfText]:
+            {
+                var reference = JsonSerializer.Deserialize<MarketReferenceData>(await File.ReadAllTextAsync(referencePath), json)
+                    ?? throw new InvalidDataException("Market reference data is empty.");
+                var asOf = DateTimeOffset.Parse(asOfText, System.Globalization.CultureInfo.InvariantCulture);
+                Print(new { AsOf = asOf, Securities = new SecurityMaster(reference.Securities).UniverseAt(asOf) }, json);
+                return 0;
+            }
             case ["evaluate-long-term", var inputPath]:
             {
                 var input = JsonSerializer.Deserialize<LongTermInput>(await File.ReadAllTextAsync(inputPath), json)
                     ?? throw new InvalidDataException("Long-term input JSON is empty.");
                 Print(new LongTermEvaluator().Evaluate(input.DecisionTimes, input.Metrics, input.Prices,
                     input.BenchmarkSecurityId, input.InitialCapital, input.MaxHoldings,
-                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding), json);
+                    input.EntryCostBps, input.ExitCostBps, input.FixedSellChargePerHolding, input.ReferenceData), json);
                 return 0;
             }
-            case ["replay", var barsPath, var databasePath, var stream]:
+            case ["replay", _, _, _] or ["replay", _, _, _, _]:
             {
+                string barsPath = args[1], databasePath = args[2], stream = args[3];
                 var bars = JsonSerializer.Deserialize<MarketBar[]>(await File.ReadAllTextAsync(barsPath), json)
                     ?? throw new InvalidDataException("Bars JSON is empty.");
-                var result = new ReplayEngine().Run(bars, ExampleConfig());
+                var config = ExampleConfig();
+                if (args.Length == 5)
+                    config = config with { ReferenceData = JsonSerializer.Deserialize<MarketReferenceData>(await File.ReadAllTextAsync(args[4]), json)
+                        ?? throw new InvalidDataException("Market reference data is empty.") };
+                var result = new ReplayEngine().Run(bars, config);
                 var store = new SqliteStore(databasePath);
                 await store.InitializeAsync();
                 await store.AppendEventsAsync(stream, 0, result.Events);
@@ -68,21 +95,26 @@ static async Task<int> MainAsync(string[] args)
             }
             case ["import-research", var batchPath, var databasePath]:
             {
-                var batch = JsonSerializer.Deserialize<ResearchImportBatch>(await File.ReadAllTextAsync(batchPath), json)
+                string content = await File.ReadAllTextAsync(batchPath);
+                var batch = JsonSerializer.Deserialize<ResearchImportBatch>(content, json)
                     ?? throw new InvalidDataException("Research batch JSON is empty.");
+                if (batch.Documents.Any(d => d is null)) throw new InvalidDataException("Document input rows cannot be null.");
                 var store = new SqliteStore(databasePath);
                 await store.InitializeAsync();
-                foreach (var input in batch.Documents)
-                {
-                    var doc = ResearchServices.CreateDocument(input.DocumentId, input.SecurityId,
-                        new Uri(input.SourceUrl), input.Publisher, input.PublishedAt,
-                        input.FirstKnownAt, input.RetrievedAt, input.LicenceId, input.ParserVersion,
-                        input.Content, input.SupersedesDocumentId);
-                    await store.AddDocumentAsync(doc);
-                }
-                foreach (var fact in batch.Facts) await store.AddFactAsync(fact);
-                foreach (var metric in batch.Metrics) await store.AddMetricAsync(metric);
-                Print(new { DocumentCount = batch.Documents.Count, FactCount = batch.Facts.Count, MetricCount = batch.Metrics.Count }, json);
+                var docs = batch.Documents.Select(d => new SourceDocument(d.DocumentId, d.SecurityId,
+                    new Uri(d.SourceUrl, UriKind.RelativeOrAbsolute), d.Publisher, d.PublishedAt, d.FirstKnownAt,
+                    d.RetrievedAt, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(d.Content))).ToLowerInvariant(),
+                    d.LicenceId, d.ParserVersion, d.SupersedesDocumentId, d.Content)).ToArray();
+                string id = batch.BatchId ?? "file-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))).ToLowerInvariant();
+                var result = await store.ImportResearchAsync(new ResearchBatch(id, docs, batch.Facts, batch.Metrics));
+                Print(result, json);
+                return result.Status == ResearchImportStatus.Quarantined ? 1 : 0;
+            }
+            case ["health", var databasePath]:
+            {
+                var store = new SqliteStore(databasePath);
+                await store.InitializeAsync();
+                Print(new { Health = await store.GetResearchHealthAsync(), Imports = await store.GetImportHistoryAsync() }, json);
                 return 0;
             }
             case ["research", var databasePath, var asOfText, var securityId, var search]:
@@ -90,8 +122,8 @@ static async Task<int> MainAsync(string[] args)
                 var asOf = DateTimeOffset.Parse(asOfText, System.Globalization.CultureInfo.InvariantCulture);
                 var store = new SqliteStore(databasePath);
                 await store.InitializeAsync();
-                var packet = ResearchServices.BuildPacket(await store.GetFactsAtAsync(asOf), asOf);
-                var ranked = new LongTermRanker().Rank(await store.GetMetricsAtAsync(asOf), asOf);
+                var packet = ResearchServices.BuildPacket(await store.GetFactsAtAsync(asOf, securityId), asOf);
+                var ranked = new LongTermRanker().Rank(await store.GetMetricsAtAsync(asOf, securityId), asOf);
                 var citations = await store.SearchDocumentsAsync(securityId, search, asOf);
                 Print(new { packet.AsOf, packet.Version, packet.Hash, FactCount = packet.Facts.Count,
                     Facts = ResearchServices.CiteCompany(packet, securityId, search),
@@ -101,11 +133,11 @@ static async Task<int> MainAsync(string[] args)
                 return 0;
             }
             default:
-                Console.Error.WriteLine("Usage: demo | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-long-term <input.json> | replay <bars.json> <db.sqlite> <stream> | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
+                Console.Error.WriteLine("Usage: demo | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
                 return 2;
         }
     }
-    catch (Exception ex) when (ex is ArgumentException or InvalidDataException or InvalidOperationException or JsonException or IOException)
+    catch (Exception ex) when (ex is ArgumentException or InvalidDataException or InvalidOperationException or JsonException or IOException or FormatException or SqliteException)
     {
         Console.Error.WriteLine($"{ex.GetType().Name}: {ex.Message}");
         return 1;
@@ -118,7 +150,7 @@ static SimulationConfig ExampleConfig() => new(
     SlippageBps: 2m,
     MaxFillQuantityPerBar: int.MaxValue,
     SessionEndLocalTime: new TimeSpan(9, 40, 0),
-    Policy: new RiskPolicy(5_000m, 50m, 100m, 1, 1.5m, 30m, 5m, TimeSpan.FromSeconds(30), "paper-example-v1"));
+    Policy: new RiskPolicy(5_000m, 50m, 100m, 1, 1.5m, 30m, 5m, TimeSpan.FromSeconds(30), "paper-example-v2-fees"));
 
 static MarketBar[] SyntheticBars()
 {
@@ -145,7 +177,8 @@ public sealed record SourceDocumentInput(
 public sealed record ResearchImportBatch(
     IReadOnlyList<SourceDocumentInput> Documents,
     IReadOnlyList<SourceFact> Facts,
-    IReadOnlyList<CompanyMetric> Metrics);
+    IReadOnlyList<CompanyMetric> Metrics,
+    string? BatchId = null);
 
 public sealed record LongTermInput(
     IReadOnlyList<DateTimeOffset> DecisionTimes,
@@ -156,9 +189,13 @@ public sealed record LongTermInput(
     int MaxHoldings,
     decimal EntryCostBps,
     decimal ExitCostBps,
-    decimal FixedSellChargePerHolding);
+    decimal FixedSellChargePerHolding,
+    MarketReferenceData? ReferenceData = null);
 
 public sealed record IntradayStudyInput(
     IReadOnlyList<IReadOnlyList<MarketBar>> Sessions,
     SimulationConfig Config,
     IntradayStudyPlan Plan);
+
+public sealed record WalkForwardInput(IReadOnlyList<IReadOnlyList<MarketBar>> Sessions,
+    SimulationConfig Config, WalkForwardPlan Plan);

@@ -3,7 +3,7 @@ using TradeTest.Domain;
 namespace TradeTest.Application;
 
 /// <summary>Published Groww NSE intraday equity rates checked 2026-10-08; verify against contract notes.</summary>
-public sealed class GrowwIntradayCostModel
+public sealed class GrowwIntradayCostModel : ICostModel
 {
     public const string Version = "groww-nse-cash-intraday-2026-10-08";
 

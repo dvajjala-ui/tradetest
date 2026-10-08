@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/TradeTest.Benchmarks/TradeTest.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/TradeTest.Application/TradeTest.Application.csproj" />
     <Project Path="src/TradeTest.Cli/TradeTest.Cli.csproj" />

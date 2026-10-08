@@ -1,6 +1,6 @@
 # TradeTest: implementation proposal for review
 
-Status: **planning only**. Research checked on 2026-10-08 (India). No broker subscription, credential, order, or live trading is authorized by this document. The older conversation record in `00-conversation-context.md` remains a history of the original intraday idea; this document is the proposed expanded design.
+Status: **G0–G4 approved; offline implementation underway**. Research checked on 2026-10-08 (India). [Current implementation status](16-implementation-status.md) records progress and open gates. Broker purchases and real-money activation retain their separate G5/G6 reviews. The older conversation record in `00-conversation-context.md` remains a history of the original intraday idea.
 
 ## 1. Decision to make
 
@@ -145,7 +145,7 @@ Baseline: use **Nifty 500 Total Returns Index** as the broad India research benc
 | G6: restricted live | Explicit user approval, independently configured capital and loss caps | Broker-confirmed net P&L and incident-free sample; pause on any state mismatch |
 | G7: scale decision | Compare net evidence with passive benchmark and fixed R&D costs | Stop, revise, or scale only by a new reviewed policy |
 
-**Approval requested after planning:** approve the scope and G0–G4 implementation first. G5 purchases and G6 real-money activation require their own concrete review of current terms, limits, account state and measured evidence. The user has asked for a plan before implementation; this document does not start coding.
+**Implementation authorization:** the user approved starting G0–G4 and pushing the work. G5 purchases and G6 real-money activation require their own concrete review of current terms, limits, account state and measured evidence. Track completed work and remaining evidence in [the implementation status](16-implementation-status.md).
 
 ## 7. Decisions still needed
 

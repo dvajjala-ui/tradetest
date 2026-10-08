@@ -1,0 +1,108 @@
+{
+  "Securities": [
+    {
+      "VersionId": "synthetic-v1",
+      "SecurityId": "SYNTH-ONE",
+      "Isin": "SYNTHETIC-ISIN",
+      "Exchange": "NSE",
+      "Symbol": "SYNTHA",
+      "Segment": "CASH_EQUITY",
+      "EffectiveAt": "2025-12-31T00:00:00Z",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "IsListed": true,
+      "SourceUrl": "https://example.com/synthetic-security",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "VersionId": "synthetic-v2",
+      "SecurityId": "SYNTH-ONE",
+      "Isin": "SYNTHETIC-ISIN",
+      "Exchange": "NSE",
+      "Symbol": "SYNTHB",
+      "Segment": "CASH_EQUITY",
+      "EffectiveAt": "2026-01-06T00:00:00Z",
+      "FirstKnownAt": "2026-01-05T10:00:00Z",
+      "IsListed": true,
+      "SourceUrl": "https://example.com/synthetic-security",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "VersionId": "synthetic-v3",
+      "SecurityId": "SYNTH-ONE",
+      "Isin": "SYNTHETIC-ISIN",
+      "Exchange": "NSE",
+      "Symbol": "SYNTHB",
+      "Segment": "CASH_EQUITY",
+      "EffectiveAt": "2026-01-13T00:00:00Z",
+      "FirstKnownAt": "2026-01-13T00:00:00Z",
+      "IsListed": false,
+      "SourceUrl": "https://example.com/synthetic-security",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    }
+  ],
+  "Sessions": [
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-05",
+      "OpensAt": "2026-01-05T09:15:00+05:30",
+      "ClosesAt": "2026-01-05T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-06",
+      "OpensAt": "2026-01-06T09:15:00+05:30",
+      "ClosesAt": "2026-01-06T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-07",
+      "OpensAt": "2026-01-07T09:15:00+05:30",
+      "ClosesAt": "2026-01-07T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-08",
+      "OpensAt": "2026-01-08T09:15:00+05:30",
+      "ClosesAt": "2026-01-08T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-09",
+      "OpensAt": "2026-01-09T09:15:00+05:30",
+      "ClosesAt": "2026-01-09T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    },
+    {
+      "Exchange": "NSE",
+      "SessionDate": "2026-01-12",
+      "OpensAt": "2026-01-12T09:15:00+05:30",
+      "ClosesAt": "2026-01-12T15:30:00+05:30",
+      "FirstKnownAt": "2025-12-30T00:00:00Z",
+      "SourceUrl": "https://example.com/synthetic-calendar",
+      "LicenceId": "SYNTHETIC_ONLY",
+      "Verification": "Verified"
+    }
+  ]
+}

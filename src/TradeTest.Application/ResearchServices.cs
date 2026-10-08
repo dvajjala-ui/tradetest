@@ -24,11 +24,11 @@ public static class ResearchServices
 
     public static ResearchPacket BuildPacket(IEnumerable<SourceFact> allFacts, DateTimeOffset asOf)
     {
-        var visible = allFacts.Where(f => f.FirstKnownAt <= asOf && f.Verification == VerificationState.Verified)
+        var visible = allFacts.Where(f => f.FirstKnownAt <= asOf)
             .OrderBy(f => f.FactId, StringComparer.Ordinal).ToArray();
         var superseded = visible.Where(f => f.SupersedesFactId is not null)
             .Select(f => f.SupersedesFactId!).ToHashSet(StringComparer.Ordinal);
-        var facts = visible.Where(f => !superseded.Contains(f.FactId)).ToArray();
+        var facts = visible.Where(f => f.Verification == VerificationState.Verified && !superseded.Contains(f.FactId)).ToArray();
         var canonical = JsonSerializer.Serialize(new { asOf, version = "packet-v1", facts });
         string hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonical))).ToLowerInvariant();
         return new ResearchPacket(asOf, "packet-v1", facts, hash);

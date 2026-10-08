@@ -1,6 +1,6 @@
 # TradeTest — India trading and long-term investing research
 
-This repository contains the [approved G0–G4 plan](docs/12-master-implementation-plan.md), its supporting research, and an initial **offline** .NET implementation. It can replay synthetic market sessions, record a tamper-evident event journal, store dated research, and run preliminary strategy evaluations. It cannot connect to a broker or place orders.
+This repository contains the [approved G0–G4 plan](docs/12-master-implementation-plan.md), its supporting research, and an **offline** .NET implementation. It provides incremental replay, a tamper-evident journal, atomic research imports, dated company retrieval, security/calendar history, and chronological strategy evaluations. It cannot connect to a broker or place orders.
 
 ## Current concept
 
@@ -37,8 +37,9 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 15. [Research ledger and failure lessons](docs/14-research-ledger-and-failure-lessons.md)
 16. [Source register and data contract](docs/15-source-register-and-data-contract.md)
 17. [Implementation status and next gates](docs/16-implementation-status.md)
+18. [Optimization measurements and new features](docs/17-optimization-and-features.md)
 
-Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–16.
+Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
 
 ## Run the offline prototype
 
@@ -48,6 +49,7 @@ Install the .NET 10 SDK, then run from the repository root:
 dotnet test TradeTest.slnx
 dotnet run --project src/TradeTest.Cli -- demo
 dotnet run --project src/TradeTest.Cli -- evaluate-study fixtures/synthetic-study.json
+dotnet run --project src/TradeTest.Cli -- evaluate-walk-forward fixtures/synthetic-walk-forward.json
 dotnet run --project src/TradeTest.Cli -- evaluate-long-term fixtures/synthetic-long-term.json
 ~~~
 
@@ -55,10 +57,32 @@ To inspect the dated research example locally:
 
 ~~~bash
 dotnet run --project src/TradeTest.Cli -- import-research fixtures/synthetic-research.json research.sqlite
+dotnet run --project src/TradeTest.Cli -- health research.sqlite
 dotnet run --project src/TradeTest.Cli -- research research.sqlite 2026-04-01T00:00:00Z SYNTH-ONE revenue
 ~~~
 
-All bundled prices, documents, companies, and returns are **synthetic**. The example ₹5,000 is a research configuration, not an activated trading budget. The CLI has no live broker adapter, API credentials, or order route. Repeating an import into the same SQLite database will reject duplicate IDs; use a fresh database for each example run.
+New imports record a batch ID and payload hash. Repeating an applied batch returns `AlreadyApplied`; a rejected batch rolls back completely and is recorded as `Quarantined`. The `health` command reports stored row counts and recent import outcomes. Databases created by the earlier prototype have no batch history for their old rows, so importing overlapping IDs will quarantine the new batch; use a fresh database for the examples.
+
+To inspect the synthetic universe before/after a symbol change, or replay against its dated listing and session records:
+
+~~~bash
+dotnet run --project src/TradeTest.Cli -- universe fixtures/synthetic-market-reference.json 2026-01-07T00:00:00Z
+dotnet run --project src/TradeTest.Cli -- replay fixtures/synthetic-bars.json replay.sqlite sample-session fixtures/synthetic-market-reference.json
+~~~
+
+`SimulationConfig.ReferenceData` also accepts these records in study inputs. Long-term inputs accept an optional `ReferenceData` to filter the ranked universe as of each decision date. Legacy examples can run without reference data; those runs do not validate exchange sessions or historical listings.
+
+All bundled prices, documents, companies, calendars, and returns are **synthetic**. The example ₹5,000 is a research configuration, not an activated trading budget. The CLI has no live broker adapter, API credentials, or order route.
+
+## Measure offline performance
+
+~~~bash
+dotnet build TradeTest.slnx -c Release
+dotnet run --no-build -c Release --project benchmarks/TradeTest.Benchmarks -- replay 5000
+dotnet run --no-build -c Release --project benchmarks/TradeTest.Benchmarks -- import 5000
+~~~
+
+The [measured comparison](docs/17-optimization-and-features.md) records workload, runtime, raw trials, and limits. These timings measure local computation and SQLite imports.
 
 ## Core architectural principle
 

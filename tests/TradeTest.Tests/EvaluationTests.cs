@@ -47,6 +47,26 @@ public sealed class EvaluationTests
     }
 
     [Fact]
+    public void Walk_forward_uses_disjoint_evaluation_dates_and_a_separate_final_holdout()
+    {
+        var bars = TradingTests.Bars();
+        IReadOnlyList<MarketBar>[] sessions = new[] { 0, 1, 2, 3, 4, 7 }.Select(offset =>
+            (IReadOnlyList<MarketBar>)bars.Select(b => b with { StartsAt = b.StartsAt.AddDays(offset) }).ToArray()).ToArray();
+        var policy = new RiskPolicy(5000m, 50m, 100m, 1, 1.5m, 30m, 5m, TimeSpan.FromSeconds(30), "frozen-test-v1");
+        var config = new SimulationConfig(5000m, 5m, 2m, int.MaxValue, new TimeSpan(9, 40, 0), policy);
+        var plan = new WalkForwardPlan(1, 1, 1, new DateOnly(2026, 1, 12), new DateOnly(2026, 1, 13), 1.1m);
+        var evaluator = new WalkForwardEvaluator();
+        var report = evaluator.Evaluate(sessions, config, plan);
+        Assert.Equal([1, 2, 3], report.Folds.Select(f => f.Training.Sessions));
+        Assert.Equal(3, report.CombinedOutOfSample.Sessions);
+        Assert.Equal(1, report.FinalHoldout.Sessions);
+        Assert.All(report.Folds, f => Assert.True(f.EvaluationEndExclusive <= plan.FinalHoldoutStartsAt));
+        Assert.True(report.StressedFinalHoldout.NetPnl < report.FinalHoldout.NetPnl);
+        Assert.Throws<ArgumentException>(() => evaluator.Evaluate(sessions[..^1], config, plan));
+        Assert.Throws<ArgumentException>(() => evaluator.Evaluate([.. sessions, sessions[0]], config, plan));
+    }
+
+    [Fact]
     public void Long_term_evaluation_does_not_select_future_information_and_requires_exit_price()
     {
         var decision = new DateTimeOffset(2026, 1, 5, 0, 0, 0, TimeSpan.Zero);

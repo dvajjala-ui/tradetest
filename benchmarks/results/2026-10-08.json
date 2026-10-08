@@ -1,0 +1,169 @@
+{
+  "CheckedAtUtc": "2026-10-08T13:21:53.558368+00:00",
+  "BaselineCommit": "eb4309cd40e9c59f6d065fa7e500f4079fa0a602",
+  "Method": "Three separate Release processes per workload/revision; medians. Replay warms 100 sessions. Import includes cold import-path startup and writes to a new local SQLite database. Data is synthetic.",
+  "Caveat": "Shared container timing; no live feed, network, broker, AI, persistence, or active-trading latency measured by replay workload.",
+  "Comparisons": {
+    "replay": {
+      "BeforeTrials": [
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 1563.2857,
+          "SessionsPerSecond": 3198.3916951328856,
+          "P50Microseconds": 204,
+          "P95Microseconds": 1048,
+          "P99Microseconds": 1803,
+          "AllocatedBytesPerSession": 483951,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        },
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 1587.8845,
+          "SessionsPerSecond": 3148.843634407918,
+          "P50Microseconds": 217.5,
+          "P95Microseconds": 1163.9,
+          "P99Microseconds": 1624.6,
+          "AllocatedBytesPerSession": 483960,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        },
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 1607.0623,
+          "SessionsPerSecond": 3111.2670616440946,
+          "P50Microseconds": 221.1,
+          "P95Microseconds": 588.1,
+          "P99Microseconds": 1976.6,
+          "AllocatedBytesPerSession": 483992,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        }
+      ],
+      "AfterTrials": [
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 451.5677,
+          "SessionsPerSecond": 11072.536853278036,
+          "P50Microseconds": 80,
+          "P95Microseconds": 120.9,
+          "P99Microseconds": 169,
+          "AllocatedBytesPerSession": 8128,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        },
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 545.6425,
+          "SessionsPerSecond": 9163.50907416486,
+          "P50Microseconds": 54.3,
+          "P95Microseconds": 128.5,
+          "P99Microseconds": 2084.6,
+          "AllocatedBytesPerSession": 8117,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        },
+        {
+          "Workload": "synthetic-flat-75-bar-session",
+          "Sessions": 5000,
+          "ElapsedMs": 448.6532,
+          "SessionsPerSecond": 11144.465257352449,
+          "P50Microseconds": 76.4,
+          "P95Microseconds": 113.2,
+          "P99Microseconds": 274.8,
+          "AllocatedBytesPerSession": 8120,
+          "NetPnlChecksum": 0,
+          "Runtime": ".NET 10.0.12",
+          "OS": "Debian GNU/Linux 13 (trixie)",
+          "LogicalProcessors": 2
+        }
+      ],
+      "MedianBeforeMs": 1587.8845,
+      "MedianAfterMs": 451.5677,
+      "ElapsedReductionPercent": 71.56167844701551,
+      "ThroughputMultiplier": 3.516381928999793,
+      "MedianAllocationBeforeBytes": 483960,
+      "MedianAllocationAfterBytes": 8120,
+      "AllocationReductionPercent": 98.32217538639557
+    },
+    "import": {
+      "BeforeTrials": [
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 846.3435,
+          "RowsPerSecond": 17723.300291193824,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        },
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 903.4166,
+          "RowsPerSecond": 16603.635576322155,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        },
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 965.2604,
+          "RowsPerSecond": 15539.84810730866,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        }
+      ],
+      "AfterTrials": [
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 240.0439,
+          "RowsPerSecond": 62488.56979910758,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        },
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 389.786,
+          "RowsPerSecond": 38482.65458482347,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        },
+        {
+          "Workload": "synthetic-document-fact-metric-import",
+          "Documents": 5000,
+          "Rows": 15000,
+          "ElapsedMs": 234.4185,
+          "RowsPerSecond": 63988.123804221934,
+          "StoredFacts": 5000,
+          "Runtime": ".NET 10.0.12"
+        }
+      ],
+      "MedianBeforeMs": 903.4166,
+      "MedianAfterMs": 240.0439,
+      "ElapsedReductionPercent": 73.42932374720587,
+      "ThroughputMultiplier": 3.7635474177848303
+    }
+  }
+}

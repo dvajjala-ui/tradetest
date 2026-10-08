@@ -13,7 +13,8 @@ public sealed record SimulationConfig(
     decimal SlippageBps,
     int MaxFillQuantityPerBar,
     TimeSpan SessionEndLocalTime,
-    RiskPolicy Policy);
+    RiskPolicy Policy,
+    MarketReferenceData? ReferenceData = null);
 
 public sealed record SimulationReport(
     string StrategyVersion,
@@ -34,7 +35,11 @@ public sealed class ReplayEngine
     private readonly RiskEngine _risk = new();
     private readonly TimeZoneInfo _india = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata");
 
-    public SimulationReport Run(IReadOnlyList<MarketBar> bars, SimulationConfig config)
+    public SimulationReport Run(IReadOnlyList<MarketBar> bars, SimulationConfig config, bool captureEvents = true) =>
+        RunCompiled(bars, config, captureEvents, referenceValidator: null);
+
+    internal SimulationReport RunCompiled(IReadOnlyList<MarketBar> bars, SimulationConfig config, bool captureEvents,
+        MarketReferenceValidator? referenceValidator)
     {
         if (bars.Count == 0) throw new ArgumentException("At least one bar is required.", nameof(bars));
         if (config.InitialCash <= 0 || config.SpreadBps < 0 || config.SlippageBps < 0)
@@ -51,33 +56,45 @@ public sealed class ReplayEngine
         var sessionDate = TimeZoneInfo.ConvertTime(bars[0].StartsAt, _india).Date;
         var endLocal = DateTime.SpecifyKind(sessionDate + config.SessionEndLocalTime, DateTimeKind.Unspecified);
         var sessionEndsAt = new DateTimeOffset(TimeZoneInfo.ConvertTimeToUtc(endLocal, _india), TimeSpan.Zero);
-        var sessionBars = bars.Where(b => b.EndsAt <= sessionEndsAt).ToArray();
-        if (sessionBars.Length == 0 || sessionBars[^1].EndsAt != sessionEndsAt)
+        var marketReference = referenceValidator ?? (config.ReferenceData is null ? null : new MarketReferenceValidator(config.ReferenceData));
+        marketReference?.ValidateReplay(bars, sessionEndsAt);
+        int sessionBarCount = 0;
+        while (sessionBarCount < bars.Count && bars[sessionBarCount].EndsAt <= sessionEndsAt) sessionBarCount++;
+        if (sessionBarCount == 0 || bars[sessionBarCount - 1].EndsAt != sessionEndsAt)
             throw new InvalidDataException("Input bars end before the configured session window closes.");
+        var strategySession = _strategy.CreateSession();
 
         void CaptureBrokerEvents()
         {
-            foreach (var fill in broker.Fills.Skip(lastFillCount)) Add("FILL", fill.FilledAt, fill);
-            lastFillCount = broker.Fills.Count;
-            foreach (var trade in broker.Trades.Skip(lastTradeCount))
+            for (int i = lastFillCount; i < broker.Fills.Count; i++)
             {
+                var fill = broker.Fills[i];
+                Add("FILL", fill.FilledAt, fill);
+            }
+            lastFillCount = broker.Fills.Count;
+            for (int i = lastTradeCount; i < broker.Trades.Count; i++)
+            {
+                var trade = broker.Trades[i];
                 Add("TRADE_CLOSED", trade.ExitedAt, trade);
                 realized += trade.NetPnl;
             }
             lastTradeCount = broker.Trades.Count;
         }
-        void Add(string type, DateTimeOffset at, object value) =>
-            events.Add(new SimulationEvent(type, at, JsonSerializer.Serialize(value)));
-
-        for (int index = 0; index < sessionBars.Length; index++)
+        void Add(string type, DateTimeOffset at, object value)
         {
-            var bar = sessionBars[index];
+            if (captureEvents) events.Add(new SimulationEvent(type, at, JsonSerializer.Serialize(value)));
+        }
+
+        for (int index = 0; index < sessionBarCount; index++)
+        {
+            var bar = bars[index];
+            strategySession.Append(bar, bar.EndsAt);
             broker.ProcessBar(bar);
             CaptureBrokerEvents();
             if (bar.EndsAt >= sessionEndsAt || broker.HasOpenPosition || broker.HasPendingEntry || orders >= config.Policy.MaxTradesPerSession)
                 continue;
 
-            var candidate = _strategy.Scan(sessionBars.Take(index + 1).ToArray(), bar.EndsAt);
+            var candidate = strategySession.CurrentCandidate();
             if (candidate is null) continue;
             candidates++;
             Add("CANDIDATE", candidate.GeneratedAt, candidate);
@@ -104,7 +121,7 @@ public sealed class ReplayEngine
             Add("ORDER_INTENT", intent.CreatedAt, intent);
         }
 
-        broker.ForceExit(sessionBars[^1]);
+        broker.ForceExit(bars[sessionBarCount - 1]);
         CaptureBrokerEvents();
         decimal peak = config.InitialCash, equity = peak, maxDrawdown = 0;
         foreach (var trade in broker.Trades)
