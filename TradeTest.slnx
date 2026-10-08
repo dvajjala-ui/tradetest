@@ -3,6 +3,7 @@
     <Project Path="benchmarks/TradeTest.Benchmarks/TradeTest.Benchmarks.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/TradeTest.Api/TradeTest.Api.csproj" />
     <Project Path="src/TradeTest.Application/TradeTest.Application.csproj" />
     <Project Path="src/TradeTest.Cli/TradeTest.Cli.csproj" />
     <Project Path="src/TradeTest.Domain/TradeTest.Domain.csproj" />

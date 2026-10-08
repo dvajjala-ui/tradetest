@@ -1,4 +1,4 @@
-name: .NET verification
+name: Build and verification
 
 on:
   push:
@@ -18,3 +18,15 @@ jobs:
           dotnet-version: 10.0.x
       - run: dotnet build TradeTest.slnx --configuration Release --nologo
       - run: dotnet test TradeTest.slnx --configuration Release --no-build --nologo
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: dotnet run --no-build --configuration Release --project src/TradeTest.Cli -- export-dashboard . artifacts/current-snapshot.json
+      - name: Check the bundled report is current
+        run: python3 scripts/check-dashboard-snapshot.py web/public/snapshot.json artifacts/current-snapshot.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run build && npm test
+        working-directory: web

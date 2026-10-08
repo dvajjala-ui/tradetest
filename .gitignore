@@ -15,3 +15,8 @@ artifacts/
 .env.*
 !*.example
 secrets/
+**/node_modules/
+**/dist/
+.vercel/
+**/.vercel/
+web/test-results/

@@ -10,16 +10,17 @@ namespace TradeTest.Infrastructure;
 public sealed record StoredEvent(int Version, SimulationEvent Event, string PreviousHash, string Hash);
 
 /// <summary>Local research and append-only simulation journal. No credential or order API access.</summary>
-public sealed partial class SqliteStore(string databasePath)
+public sealed partial class SqliteStore(string databasePath, bool readOnly = false)
 {
     private readonly string _connectionString = new SqliteConnectionStringBuilder
     {
         DataSource = databasePath,
-        Mode = SqliteOpenMode.ReadWriteCreate
+        Mode = readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWriteCreate
     }.ToString();
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
+        if (readOnly) throw new InvalidOperationException("A read-only research store cannot initialize or migrate a database.");
         string? directory = Path.GetDirectoryName(Path.GetFullPath(databasePath));
         if (directory is not null) Directory.CreateDirectory(directory);
         await using var connection = await OpenAsync(cancellationToken);

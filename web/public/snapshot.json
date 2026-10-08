@@ -1,0 +1,1032 @@
+{
+  "schemaVersion": "tradetest-dashboard-v1",
+  "generatedAt": "2026-10-08T14:03:50.2182289+00:00",
+  "dataKind": "Synthetic",
+  "mode": "PAPER / OFFLINE",
+  "evidenceNote": "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
+  "inputs": [
+    {
+      "file": "fixtures/synthetic-bars.json",
+      "sha256": "a51fc8cac9c54df91d4746f050c520f02ff7c67af9c24d3306cb9559190014d0"
+    },
+    {
+      "file": "fixtures/synthetic-research.json",
+      "sha256": "6cbb053da44d620f42e1fd9626ef7a63fc6f96c06ab0d0bdf1d99072de624ed9"
+    },
+    {
+      "file": "fixtures/synthetic-study.json",
+      "sha256": "637c2eab7253c67413a9a413bbfef4c57bd1fae11f7b34a881e15c5e3eeb8b34"
+    },
+    {
+      "file": "fixtures/synthetic-walk-forward.json",
+      "sha256": "a842368bb4abafafa93e76d6db83593b61f319f41ae7a3983d85a096c2a64b96"
+    },
+    {
+      "file": "fixtures/synthetic-long-term.json",
+      "sha256": "f412a4b6976db98e2d6b197af8d2ca45e51148aa8402568584569a64b5362bab"
+    },
+    {
+      "file": "benchmarks/results/2026-10-08.json",
+      "sha256": "a101d9bc0544b6a04832252c679c11bacad179c0523f156cc8fbc32039ee524c"
+    }
+  ],
+  "bars": [
+    {
+      "securityId": "SYNTH-ONE",
+      "startsAt": "2026-01-05T09:15:00+05:30",
+      "interval": "00:05:00",
+      "open": 100,
+      "high": 100.3,
+      "low": 99.9,
+      "close": 100.1,
+      "volume": 1000,
+      "isComplete": true,
+      "endsAt": "2026-01-05T09:20:00+05:30"
+    },
+    {
+      "securityId": "SYNTH-ONE",
+      "startsAt": "2026-01-05T09:20:00+05:30",
+      "interval": "00:05:00",
+      "open": 100.1,
+      "high": 100.5,
+      "low": 100,
+      "close": 100.4,
+      "volume": 1000,
+      "isComplete": true,
+      "endsAt": "2026-01-05T09:25:00+05:30"
+    },
+    {
+      "securityId": "SYNTH-ONE",
+      "startsAt": "2026-01-05T09:25:00+05:30",
+      "interval": "00:05:00",
+      "open": 100.4,
+      "high": 100.6,
+      "low": 100.2,
+      "close": 100.5,
+      "volume": 1000,
+      "isComplete": true,
+      "endsAt": "2026-01-05T09:30:00+05:30"
+    },
+    {
+      "securityId": "SYNTH-ONE",
+      "startsAt": "2026-01-05T09:30:00+05:30",
+      "interval": "00:05:00",
+      "open": 100.5,
+      "high": 101.1,
+      "low": 100.4,
+      "close": 101,
+      "volume": 2000,
+      "isComplete": true,
+      "endsAt": "2026-01-05T09:35:00+05:30"
+    },
+    {
+      "securityId": "SYNTH-ONE",
+      "startsAt": "2026-01-05T09:35:00+05:30",
+      "interval": "00:05:00",
+      "open": 100.99,
+      "high": 101.9,
+      "low": 100.8,
+      "close": 101.7,
+      "volume": 1500,
+      "isComplete": true,
+      "endsAt": "2026-01-05T09:40:00+05:30"
+    }
+  ],
+  "replay": {
+    "strategyVersion": "opening-range-v1",
+    "costModelVersion": "groww-nse-cash-intraday-2026-10-08",
+    "initialCash": 5000,
+    "candidateCount": 1,
+    "riskRejectedCount": 0,
+    "submittedOrders": 1,
+    "trades": [
+      {
+        "candidateId": "SYNTH-ONE-202601050405",
+        "securityId": "SYNTH-ONE",
+        "quantity": 49,
+        "enteredAt": "2026-01-05T09:35:00+05:30",
+        "exitedAt": "2026-01-05T09:40:00+05:30",
+        "entryPrice": 101.0354455,
+        "exitPrice": 101.754190,
+        "grossPnl": 35.2184805,
+        "costs": {
+          "brokerage": 10,
+          "stt": 1.24648882750,
+          "stampDuty": 0.148522104885,
+          "exchangeCharge": 0.29511975654315,
+          "sebiCharge": 0.0099366921395,
+          "gst": 1.8549101607628770,
+          "spreadAndSlippage": 0,
+          "total": 13.5549775418305270
+        },
+        "exitReason": "TARGET",
+        "netPnl": 21.6635029581694730
+      }
+    ],
+    "events": [
+      {
+        "type": "CANDIDATE",
+        "occurredAt": "2026-01-05T09:35:00+05:30",
+        "json": "{\u0022CandidateId\u0022:\u0022SYNTH-ONE-202601050405\u0022,\u0022SecurityId\u0022:\u0022SYNTH-ONE\u0022,\u0022GeneratedAt\u0022:\u00222026-01-05T09:35:00\u002B05:30\u0022,\u0022ExpiresAt\u0022:\u00222026-01-05T09:40:00\u002B05:30\u0022,\u0022Entry\u0022:101,\u0022Stop\u0022:100.6,\u0022Target\u0022:101.8,\u0022VolumeRatio\u0022:2,\u0022Vwap\u0022:100.5,\u0022StrategyVersion\u0022:\u0022opening-range-v1\u0022}"
+      },
+      {
+        "type": "RISK_DECISION",
+        "occurredAt": "2026-01-05T09:35:00+05:30",
+        "json": "{\u0022Approved\u0022:true,\u0022Quantity\u0022:49,\u0022Reasons\u0022:[],\u0022PolicyVersion\u0022:\u0022paper-example-v2-fees\u0022}"
+      },
+      {
+        "type": "ORDER_INTENT",
+        "occurredAt": "2026-01-05T09:35:00+05:30",
+        "json": "{\u0022ReferenceId\u0022:\u00224B96EFB7E2C8B887\u0022,\u0022CandidateId\u0022:\u0022SYNTH-ONE-202601050405\u0022,\u0022SecurityId\u0022:\u0022SYNTH-ONE\u0022,\u0022Side\u0022:0,\u0022Quantity\u0022:49,\u0022CreatedAt\u0022:\u00222026-01-05T09:35:00\u002B05:30\u0022,\u0022ExpiresAt\u0022:\u00222026-01-05T09:40:00\u002B05:30\u0022,\u0022LimitPrice\u0022:101.0505,\u0022StopPrice\u0022:100.6,\u0022TargetPrice\u0022:101.8,\u0022StrategyVersion\u0022:\u0022opening-range-v1\u0022,\u0022RiskPolicyVersion\u0022:\u0022paper-example-v2-fees\u0022}"
+      },
+      {
+        "type": "FILL",
+        "occurredAt": "2026-01-05T09:35:00+05:30",
+        "json": "{\u0022ReferenceId\u0022:\u00224B96EFB7E2C8B887\u0022,\u0022SecurityId\u0022:\u0022SYNTH-ONE\u0022,\u0022Side\u0022:0,\u0022Quantity\u0022:49,\u0022Price\u0022:101.0354455,\u0022FilledAt\u0022:\u00222026-01-05T09:35:00\u002B05:30\u0022}"
+      },
+      {
+        "type": "FILL",
+        "occurredAt": "2026-01-05T09:40:00+05:30",
+        "json": "{\u0022ReferenceId\u0022:\u00224B96EFB7E2C8B887\u0022,\u0022SecurityId\u0022:\u0022SYNTH-ONE\u0022,\u0022Side\u0022:1,\u0022Quantity\u0022:49,\u0022Price\u0022:101.754190,\u0022FilledAt\u0022:\u00222026-01-05T09:40:00\u002B05:30\u0022}"
+      },
+      {
+        "type": "TRADE_CLOSED",
+        "occurredAt": "2026-01-05T09:40:00+05:30",
+        "json": "{\u0022CandidateId\u0022:\u0022SYNTH-ONE-202601050405\u0022,\u0022SecurityId\u0022:\u0022SYNTH-ONE\u0022,\u0022Quantity\u0022:49,\u0022EnteredAt\u0022:\u00222026-01-05T09:35:00\u002B05:30\u0022,\u0022ExitedAt\u0022:\u00222026-01-05T09:40:00\u002B05:30\u0022,\u0022EntryPrice\u0022:101.0354455,\u0022ExitPrice\u0022:101.754190,\u0022GrossPnl\u0022:35.2184805,\u0022Costs\u0022:{\u0022Brokerage\u0022:10,\u0022Stt\u0022:1.24648882750,\u0022StampDuty\u0022:0.148522104885,\u0022ExchangeCharge\u0022:0.29511975654315,\u0022SebiCharge\u0022:0.0099366921395,\u0022Gst\u0022:1.8549101607628770,\u0022SpreadAndSlippage\u0022:0,\u0022Total\u0022:13.5549775418305270},\u0022ExitReason\u0022:\u0022TARGET\u0022,\u0022NetPnl\u0022:21.6635029581694730}"
+      }
+    ],
+    "netPnl": 21.6635029581694730,
+    "netReturnPercent": 0.4332700591633894600,
+    "maxClosedEquityDrawdownPercent": 0
+  },
+  "intradayStudy": {
+    "strategyVersion": "opening-range-v1",
+    "costModelVersion": "groww-nse-cash-intraday-2026-10-08",
+    "plan": {
+      "trainingEndExclusive": "2026-01-06",
+      "validationEndExclusive": "2026-01-07",
+      "holdoutEndExclusive": "2026-01-08",
+      "costStressMultiplier": 1.1
+    },
+    "frozenConfig": {
+      "initialCash": 5000,
+      "spreadBps": 5,
+      "slippageBps": 2,
+      "maxFillQuantityPerBar": 2147483647,
+      "sessionEndLocalTime": "09:40:00",
+      "policy": {
+        "maxPositionRupees": 5000,
+        "maxRiskPerTradeRupees": 50,
+        "maxDailyLossRupees": 100,
+        "maxTradesPerSession": 1,
+        "minimumRewardRisk": 1.5,
+        "maxSpreadBps": 30,
+        "maxEntryDeviationBps": 5,
+        "maxQuoteAge": "00:00:30",
+        "version": "synthetic-study-v2-fees"
+      },
+      "referenceData": null
+    },
+    "training": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 35.2184805,
+      "tradingCosts": 13.5549775418305270,
+      "netPnl": 21.6635029581694730,
+      "fixedCapitalReturnPercent": 0.4332700591633894600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.6635029581694730,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "validation": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 35.2184805,
+      "tradingCosts": 13.5549775418305270,
+      "netPnl": 21.6635029581694730,
+      "fixedCapitalReturnPercent": 0.4332700591633894600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.6635029581694730,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "holdout": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 35.2184805,
+      "tradingCosts": 13.5549775418305270,
+      "netPnl": 21.6635029581694730,
+      "fixedCapitalReturnPercent": 0.4332700591633894600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.6635029581694730,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "stressedHoldout": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 34.77132855,
+      "tradingCosts": 13.55492804036757970,
+      "netPnl": 21.21640050963242030,
+      "fixedCapitalReturnPercent": 0.42432801019264840600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.21640050963242030,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "noTradeBaselineReturnPercent": 0,
+    "evidenceNote": "Chronological partitions use one frozen strategy and risk config. Stress widens simulated spread and slippage only. Synthetic or small samples cannot establish an edge; keep the final holdout untouched during development."
+  },
+  "walkForward": {
+    "strategyVersion": "opening-range-v1",
+    "costModelVersion": "groww-nse-cash-intraday-2026-10-08",
+    "plan": {
+      "minimumTrainingSessions": 1,
+      "validationSessions": 1,
+      "evaluationSessions": 1,
+      "finalHoldoutStartsAt": "2026-01-12",
+      "finalHoldoutEndExclusive": "2026-01-13",
+      "costStressMultiplier": 1.1
+    },
+    "frozenConfig": {
+      "initialCash": 5000,
+      "spreadBps": 5,
+      "slippageBps": 2,
+      "maxFillQuantityPerBar": 2147483647,
+      "sessionEndLocalTime": "09:40:00",
+      "policy": {
+        "maxPositionRupees": 5000,
+        "maxRiskPerTradeRupees": 50,
+        "maxDailyLossRupees": 100,
+        "maxTradesPerSession": 1,
+        "minimumRewardRisk": 1.5,
+        "maxSpreadBps": 30,
+        "maxEntryDeviationBps": 5,
+        "maxQuoteAge": "00:00:30",
+        "version": "synthetic-study-v2-fees"
+      },
+      "referenceData": {
+        "securities": [
+          {
+            "versionId": "synthetic-v1",
+            "securityId": "SYNTH-ONE",
+            "isin": "SYNTHETIC-ISIN",
+            "exchange": "NSE",
+            "symbol": "SYNTHA",
+            "segment": "CASH_EQUITY",
+            "effectiveAt": "2025-12-31T00:00:00+00:00",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "isListed": true,
+            "sourceUrl": "https://example.com/synthetic-security",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "versionId": "synthetic-v2",
+            "securityId": "SYNTH-ONE",
+            "isin": "SYNTHETIC-ISIN",
+            "exchange": "NSE",
+            "symbol": "SYNTHB",
+            "segment": "CASH_EQUITY",
+            "effectiveAt": "2026-01-06T00:00:00+00:00",
+            "firstKnownAt": "2026-01-05T10:00:00+00:00",
+            "isListed": true,
+            "sourceUrl": "https://example.com/synthetic-security",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "versionId": "synthetic-v3",
+            "securityId": "SYNTH-ONE",
+            "isin": "SYNTHETIC-ISIN",
+            "exchange": "NSE",
+            "symbol": "SYNTHB",
+            "segment": "CASH_EQUITY",
+            "effectiveAt": "2026-01-13T00:00:00+00:00",
+            "firstKnownAt": "2026-01-13T00:00:00+00:00",
+            "isListed": false,
+            "sourceUrl": "https://example.com/synthetic-security",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          }
+        ],
+        "sessions": [
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-05",
+            "opensAt": "2026-01-05T09:15:00+05:30",
+            "closesAt": "2026-01-05T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-06",
+            "opensAt": "2026-01-06T09:15:00+05:30",
+            "closesAt": "2026-01-06T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-07",
+            "opensAt": "2026-01-07T09:15:00+05:30",
+            "closesAt": "2026-01-07T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-08",
+            "opensAt": "2026-01-08T09:15:00+05:30",
+            "closesAt": "2026-01-08T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-09",
+            "opensAt": "2026-01-09T09:15:00+05:30",
+            "closesAt": "2026-01-09T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          },
+          {
+            "exchange": "NSE",
+            "sessionDate": "2026-01-12",
+            "opensAt": "2026-01-12T09:15:00+05:30",
+            "closesAt": "2026-01-12T15:30:00+05:30",
+            "firstKnownAt": "2025-12-30T00:00:00+00:00",
+            "sourceUrl": "https://example.com/synthetic-calendar",
+            "licenceId": "SYNTHETIC_ONLY",
+            "verification": "Verified"
+          }
+        ]
+      }
+    },
+    "folds": [
+      {
+        "number": 1,
+        "trainingStartsAt": "2026-01-05",
+        "validationStartsAt": "2026-01-06",
+        "evaluationStartsAt": "2026-01-07",
+        "evaluationEndExclusive": "2026-01-08",
+        "training": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "validation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "evaluation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        }
+      },
+      {
+        "number": 2,
+        "trainingStartsAt": "2026-01-05",
+        "validationStartsAt": "2026-01-07",
+        "evaluationStartsAt": "2026-01-08",
+        "evaluationEndExclusive": "2026-01-09",
+        "training": {
+          "sessions": 2,
+          "noTradeSessions": 0,
+          "candidates": 2,
+          "trades": 2,
+          "grossPnl": 70.4369610,
+          "tradingCosts": 27.1099550836610540,
+          "netPnl": 43.3270059163389460,
+          "fixedCapitalReturnPercent": 0.8665401183267789200,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "validation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "evaluation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        }
+      },
+      {
+        "number": 3,
+        "trainingStartsAt": "2026-01-05",
+        "validationStartsAt": "2026-01-08",
+        "evaluationStartsAt": "2026-01-09",
+        "evaluationEndExclusive": "2026-01-10",
+        "training": {
+          "sessions": 3,
+          "noTradeSessions": 0,
+          "candidates": 3,
+          "trades": 3,
+          "grossPnl": 105.6554415,
+          "tradingCosts": 40.6649326254915810,
+          "netPnl": 64.9905088745084190,
+          "fixedCapitalReturnPercent": 1.2998101774901683800,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "validation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        },
+        "evaluation": {
+          "sessions": 1,
+          "noTradeSessions": 0,
+          "candidates": 1,
+          "trades": 1,
+          "grossPnl": 35.2184805,
+          "tradingCosts": 13.5549775418305270,
+          "netPnl": 21.6635029581694730,
+          "fixedCapitalReturnPercent": 0.4332700591633894600,
+          "winRatePercent": 100,
+          "netPnlPerTrade": 21.6635029581694730,
+          "profitFactor": null,
+          "maxClosedEquityDrawdownPercent": 0,
+          "exploratoryBootstrapMeanLower95": null,
+          "exploratoryBootstrapMeanUpper95": null,
+          "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+        }
+      }
+    ],
+    "combinedOutOfSample": {
+      "sessions": 3,
+      "noTradeSessions": 0,
+      "candidates": 3,
+      "trades": 3,
+      "grossPnl": 105.6554415,
+      "tradingCosts": 40.6649326254915810,
+      "netPnl": 64.9905088745084190,
+      "fixedCapitalReturnPercent": 1.2998101774901683800,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.6635029581694730,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "finalHoldout": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 35.2184805,
+      "tradingCosts": 13.5549775418305270,
+      "netPnl": 21.6635029581694730,
+      "fixedCapitalReturnPercent": 0.4332700591633894600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.6635029581694730,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "stressedFinalHoldout": {
+      "sessions": 1,
+      "noTradeSessions": 0,
+      "candidates": 1,
+      "trades": 1,
+      "grossPnl": 34.77132855,
+      "tradingCosts": 13.55492804036757970,
+      "netPnl": 21.21640050963242030,
+      "fixedCapitalReturnPercent": 0.42432801019264840600,
+      "winRatePercent": 100,
+      "netPnlPerTrade": 21.21640050963242030,
+      "profitFactor": null,
+      "maxClosedEquityDrawdownPercent": 0,
+      "exploratoryBootstrapMeanLower95": null,
+      "exploratoryBootstrapMeanUpper95": null,
+      "evidenceNote": "Fixed starting capital per session; no compounding. Bootstrap interval is exploratory and assumes independent trades; it cannot establish a durable edge."
+    },
+    "evidenceNote": "One frozen rules-only strategy; no fitting or parameter search. Evaluation windows do not overlap and exclude the final holdout. Training/validation intervals are omitted; cost stress widens spread/slippage. Reusing reports is valid only for this fixed hypothesis. Synthetic samples do not establish profitability."
+  },
+  "longTerm": {
+    "strategyVersion": "quality-growth-momentum-v1",
+    "benchmarkSecurityId": "SYNTH-TRI",
+    "initialCapital": 5000,
+    "finalCapital": 5970.000,
+    "totalNetReturnPercent": 19.400,
+    "benchmarkTriReturnPercent": 5.00,
+    "maximumRebalanceDrawdownPercent": 0,
+    "periods": [
+      {
+        "decisionAt": "2026-01-05T00:00:00+00:00",
+        "nextDecisionAt": "2026-04-06T00:00:00+00:00",
+        "entryCloseAt": "2026-01-06T10:00:00+00:00",
+        "exitCloseAt": "2026-04-07T10:00:00+00:00",
+        "securities": [
+          "SYNTH-ONE"
+        ],
+        "evidenceFactIds": [
+          "SYNTH-F1",
+          "SYNTH-F2",
+          "SYNTH-F3",
+          "SYNTH-F4",
+          "SYNTH-F5",
+          "SYNTH-F6",
+          "SYNTH-F7"
+        ],
+        "grossReturnPercent": 20.0,
+        "costPercent": 0.600,
+        "netReturnPercent": 19.400,
+        "benchmarkTriReturnPercent": 5.00
+      }
+    ],
+    "evidenceNote": "Rank uses only verified facts known by each decision time. Execution uses the next supplied adjusted close. Drawdown is measured only at rebalances. TRI is a research benchmark, not an investable after-fee fund return; costs are supplied assumptions.",
+    "pointInTimeUniverseSupplied": false
+  },
+  "research": {
+    "asOf": "2026-04-01T00:00:00+00:00",
+    "packetHash": "def5e6aeb20c2614f145bb1b6d9a256d18919bae6aff6ca1c1c127b69c85f736",
+    "facts": [
+      {
+        "factId": "SYNTH-F1",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Revenue growth was 18 percent.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F2",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Return on capital was 20 percent.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F3",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Free cash flow margin was 8 percent.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F4",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Net debt to EBITDA was 0.4.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F5",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Share dilution was 1 percent.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F6",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Twelve-month momentum was 15 percent.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      },
+      {
+        "factId": "SYNTH-F7",
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "claim": "Average daily turnover was 12000000 rupees.",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "verification": "Verified",
+        "supersedesFactId": null
+      }
+    ],
+    "metrics": [
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "RevenueGrowth3YPercent",
+        "value": 18,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F1",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "ReturnOnCapitalPercent",
+        "value": 20,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F2",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "FreeCashFlowMarginPercent",
+        "value": 8,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F3",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "NetDebtToEbitda",
+        "value": 0.4,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F4",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "ShareDilution3YPercent",
+        "value": 1,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F5",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "Momentum12MPercent",
+        "value": 15,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F6",
+        "verification": "Verified"
+      },
+      {
+        "securityId": "SYNTH-ONE",
+        "kind": "AverageDailyTurnoverRupees",
+        "value": 12000000,
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "sourceFactId": "SYNTH-F7",
+        "verification": "Verified"
+      }
+    ],
+    "companies": [
+      {
+        "securityId": "SYNTH-ONE",
+        "asOf": "2026-04-01T00:00:00+00:00",
+        "score": 12.05,
+        "evidenceFactIds": [
+          "SYNTH-F1",
+          "SYNTH-F2",
+          "SYNTH-F3",
+          "SYNTH-F4",
+          "SYNTH-F5",
+          "SYNTH-F6",
+          "SYNTH-F7"
+        ],
+        "riskFlags": [],
+        "modelVersion": "quality-growth-momentum-v1"
+      }
+    ],
+    "documents": [
+      {
+        "documentId": "SYNTH-REPORT-1",
+        "securityId": "SYNTH-ONE",
+        "publisher": "Synthetic fixture",
+        "sourceUrl": "https://example.com/synthetic-report-1",
+        "publishedAt": "2026-01-01T00:00:00+00:00",
+        "firstKnownAt": "2026-01-02T00:00:00+00:00",
+        "licenceId": "SYNTHETIC_TEST_ONLY",
+        "contentSha256": "512b3b24fa544777735c12bf01d89e6b0409b6b4239a9f957e2df26ba1112254"
+      }
+    ]
+  },
+  "performance": {
+    "CheckedAtUtc": "2026-10-08T13:21:53.558368\u002B00:00",
+    "BaselineCommit": "eb4309cd40e9c59f6d065fa7e500f4079fa0a602",
+    "Method": "Three separate Release processes per workload/revision; medians. Replay warms 100 sessions. Import includes cold import-path startup and writes to a new local SQLite database. Data is synthetic.",
+    "Caveat": "Shared container timing; no live feed, network, broker, AI, persistence, or active-trading latency measured by replay workload.",
+    "Comparisons": {
+      "replay": {
+        "BeforeTrials": [
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 1563.2857,
+            "SessionsPerSecond": 3198.3916951328856,
+            "P50Microseconds": 204,
+            "P95Microseconds": 1048,
+            "P99Microseconds": 1803,
+            "AllocatedBytesPerSession": 483951,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          },
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 1587.8845,
+            "SessionsPerSecond": 3148.843634407918,
+            "P50Microseconds": 217.5,
+            "P95Microseconds": 1163.9,
+            "P99Microseconds": 1624.6,
+            "AllocatedBytesPerSession": 483960,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          },
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 1607.0623,
+            "SessionsPerSecond": 3111.2670616440946,
+            "P50Microseconds": 221.1,
+            "P95Microseconds": 588.1,
+            "P99Microseconds": 1976.6,
+            "AllocatedBytesPerSession": 483992,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          }
+        ],
+        "AfterTrials": [
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 451.5677,
+            "SessionsPerSecond": 11072.536853278036,
+            "P50Microseconds": 80,
+            "P95Microseconds": 120.9,
+            "P99Microseconds": 169,
+            "AllocatedBytesPerSession": 8128,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          },
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 545.6425,
+            "SessionsPerSecond": 9163.50907416486,
+            "P50Microseconds": 54.3,
+            "P95Microseconds": 128.5,
+            "P99Microseconds": 2084.6,
+            "AllocatedBytesPerSession": 8117,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          },
+          {
+            "Workload": "synthetic-flat-75-bar-session",
+            "Sessions": 5000,
+            "ElapsedMs": 448.6532,
+            "SessionsPerSecond": 11144.465257352449,
+            "P50Microseconds": 76.4,
+            "P95Microseconds": 113.2,
+            "P99Microseconds": 274.8,
+            "AllocatedBytesPerSession": 8120,
+            "NetPnlChecksum": 0,
+            "Runtime": ".NET 10.0.12",
+            "OS": "Debian GNU/Linux 13 (trixie)",
+            "LogicalProcessors": 2
+          }
+        ],
+        "MedianBeforeMs": 1587.8845,
+        "MedianAfterMs": 451.5677,
+        "ElapsedReductionPercent": 71.56167844701551,
+        "ThroughputMultiplier": 3.516381928999793,
+        "MedianAllocationBeforeBytes": 483960,
+        "MedianAllocationAfterBytes": 8120,
+        "AllocationReductionPercent": 98.32217538639557
+      },
+      "import": {
+        "BeforeTrials": [
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 846.3435,
+            "RowsPerSecond": 17723.300291193824,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          },
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 903.4166,
+            "RowsPerSecond": 16603.635576322155,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          },
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 965.2604,
+            "RowsPerSecond": 15539.84810730866,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          }
+        ],
+        "AfterTrials": [
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 240.0439,
+            "RowsPerSecond": 62488.56979910758,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          },
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 389.786,
+            "RowsPerSecond": 38482.65458482347,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          },
+          {
+            "Workload": "synthetic-document-fact-metric-import",
+            "Documents": 5000,
+            "Rows": 15000,
+            "ElapsedMs": 234.4185,
+            "RowsPerSecond": 63988.123804221934,
+            "StoredFacts": 5000,
+            "Runtime": ".NET 10.0.12"
+          }
+        ],
+        "MedianBeforeMs": 903.4166,
+        "MedianAfterMs": 240.0439,
+        "ElapsedReductionPercent": 73.42932374720587,
+        "ThroughputMultiplier": 3.7635474177848303
+      }
+    }
+  },
+  "gates": [
+    {
+      "id": "g0",
+      "title": "Licensed data",
+      "state": "Pending",
+      "detail": "Vendor access, historical coverage and licences must be confirmed."
+    },
+    {
+      "id": "g1",
+      "title": "Deterministic replay",
+      "state": "Implemented",
+      "detail": "Offline simulation, fee-aware risk and hash-chained journal; synthetic verification."
+    },
+    {
+      "id": "g2",
+      "title": "Company evidence",
+      "state": "Partial",
+      "detail": "Dated facts, citations, correction withdrawal and atomic imports; vendor parsers remain."
+    },
+    {
+      "id": "g3",
+      "title": "Strategy evidence",
+      "state": "Partial",
+      "detail": "Frozen chronological studies and walk-forward. No market edge has been established."
+    },
+    {
+      "id": "g4",
+      "title": "Live-data paper sessions",
+      "state": "Pending",
+      "detail": "Authenticated no-order feed, reconciliation, fault drills and operational sessions remain."
+    },
+    {
+      "id": "g5",
+      "title": "Broker orders",
+      "state": "Not enabled",
+      "detail": "Requires separately reviewed integration and evidence gates."
+    },
+    {
+      "id": "g6",
+      "title": "Real-money activation",
+      "state": "Not enabled",
+      "detail": "Requires explicit activation and account-specific risk limits."
+    }
+  ]
+}

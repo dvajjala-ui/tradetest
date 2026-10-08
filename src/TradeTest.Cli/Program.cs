@@ -24,13 +24,23 @@ static async Task<int> MainAsync(string[] args)
         switch (args)
         {
             case ["demo"]:
-                Print(new ReplayEngine().Run(SyntheticBars(), ExampleConfig()), json);
+                Print(new ReplayEngine().Run(ExampleResearch.Bars(), ExampleResearch.Config()), json);
                 return 0;
+            case ["export-dashboard", var rootPath, var outputPath]:
+            {
+                var snapshot = await DashboardSnapshotBuilder.BuildSyntheticAsync(rootPath);
+                string? directory = Path.GetDirectoryName(Path.GetFullPath(outputPath));
+                if (directory is not null) Directory.CreateDirectory(directory);
+                await File.WriteAllTextAsync(outputPath, JsonSerializer.Serialize(snapshot, ResearchJson.OutputOptions));
+                Print(new { Output = Path.GetFullPath(outputPath), snapshot.SchemaVersion, snapshot.DataKind,
+                    snapshot.GeneratedAt, InputCount = snapshot.Inputs.Count }, json);
+                return 0;
+            }
             case ["evaluate-intraday", var sessionsPath]:
             {
                 var sessions = JsonSerializer.Deserialize<MarketBar[][]>(await File.ReadAllTextAsync(sessionsPath), json)
                     ?? throw new InvalidDataException("Sessions JSON is empty.");
-                Print(new IntradayEvaluator().Evaluate(sessions, ExampleConfig()), json);
+                Print(new IntradayEvaluator().Evaluate(sessions, ExampleResearch.Config()), json);
                 return 0;
             }
             case ["evaluate-study", var studyPath]:
@@ -71,7 +81,7 @@ static async Task<int> MainAsync(string[] args)
                 string barsPath = args[1], databasePath = args[2], stream = args[3];
                 var bars = JsonSerializer.Deserialize<MarketBar[]>(await File.ReadAllTextAsync(barsPath), json)
                     ?? throw new InvalidDataException("Bars JSON is empty.");
-                var config = ExampleConfig();
+                var config = ExampleResearch.Config();
                 if (args.Length == 5)
                     config = config with { ReferenceData = JsonSerializer.Deserialize<MarketReferenceData>(await File.ReadAllTextAsync(args[4]), json)
                         ?? throw new InvalidDataException("Market reference data is empty.") };
@@ -101,10 +111,7 @@ static async Task<int> MainAsync(string[] args)
                 if (batch.Documents.Any(d => d is null)) throw new InvalidDataException("Document input rows cannot be null.");
                 var store = new SqliteStore(databasePath);
                 await store.InitializeAsync();
-                var docs = batch.Documents.Select(d => new SourceDocument(d.DocumentId, d.SecurityId,
-                    new Uri(d.SourceUrl, UriKind.RelativeOrAbsolute), d.Publisher, d.PublishedAt, d.FirstKnownAt,
-                    d.RetrievedAt, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(d.Content))).ToLowerInvariant(),
-                    d.LicenceId, d.ParserVersion, d.SupersedesDocumentId, d.Content)).ToArray();
+                var docs = batch.Documents.Select(d => d.ToDocument()).ToArray();
                 string id = batch.BatchId ?? "file-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))).ToLowerInvariant();
                 var result = await store.ImportResearchAsync(new ResearchBatch(id, docs, batch.Facts, batch.Metrics));
                 Print(result, json);
@@ -133,7 +140,7 @@ static async Task<int> MainAsync(string[] args)
                 return 0;
             }
             default:
-                Console.Error.WriteLine("Usage: demo | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
+                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
                 return 2;
         }
     }
@@ -144,58 +151,4 @@ static async Task<int> MainAsync(string[] args)
     }
 }
 
-static SimulationConfig ExampleConfig() => new(
-    InitialCash: 5_000m,
-    SpreadBps: 5m,
-    SlippageBps: 2m,
-    MaxFillQuantityPerBar: int.MaxValue,
-    SessionEndLocalTime: new TimeSpan(9, 40, 0),
-    Policy: new RiskPolicy(5_000m, 50m, 100m, 1, 1.5m, 30m, 5m, TimeSpan.FromSeconds(30), "paper-example-v2-fees"));
-
-static MarketBar[] SyntheticBars()
-{
-    var start = new DateTimeOffset(2026, 1, 5, 9, 15, 0, TimeSpan.FromHours(5.5));
-    (decimal o, decimal h, decimal l, decimal c, decimal v)[] values =
-    [
-        (100m, 100.3m, 99.9m, 100.1m, 1000m),
-        (100.1m, 100.5m, 100m, 100.4m, 1000m),
-        (100.4m, 100.6m, 100.2m, 100.5m, 1000m),
-        (100.5m, 101.1m, 100.4m, 101m, 2000m),
-        (100.99m, 101.9m, 100.8m, 101.7m, 1500m)
-    ];
-    return values.Select((v, i) => new MarketBar("SYNTH-ONE", start.AddMinutes(5 * i),
-        TimeSpan.FromMinutes(5), v.o, v.h, v.l, v.c, v.v)).ToArray();
-}
-
 static void Print(object value, JsonSerializerOptions options) => Console.WriteLine(JsonSerializer.Serialize(value, options));
-
-public sealed record SourceDocumentInput(
-    string DocumentId, string SecurityId, string SourceUrl, string Publisher,
-    DateTimeOffset PublishedAt, DateTimeOffset FirstKnownAt, DateTimeOffset RetrievedAt,
-    string LicenceId, string ParserVersion, string Content, string? SupersedesDocumentId);
-
-public sealed record ResearchImportBatch(
-    IReadOnlyList<SourceDocumentInput> Documents,
-    IReadOnlyList<SourceFact> Facts,
-    IReadOnlyList<CompanyMetric> Metrics,
-    string? BatchId = null);
-
-public sealed record LongTermInput(
-    IReadOnlyList<DateTimeOffset> DecisionTimes,
-    IReadOnlyList<CompanyMetric> Metrics,
-    IReadOnlyList<TotalReturnPrice> Prices,
-    string BenchmarkSecurityId,
-    decimal InitialCapital,
-    int MaxHoldings,
-    decimal EntryCostBps,
-    decimal ExitCostBps,
-    decimal FixedSellChargePerHolding,
-    MarketReferenceData? ReferenceData = null);
-
-public sealed record IntradayStudyInput(
-    IReadOnlyList<IReadOnlyList<MarketBar>> Sessions,
-    SimulationConfig Config,
-    IntradayStudyPlan Plan);
-
-public sealed record WalkForwardInput(IReadOnlyList<IReadOnlyList<MarketBar>> Sessions,
-    SimulationConfig Config, WalkForwardPlan Plan);
