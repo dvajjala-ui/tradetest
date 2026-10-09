@@ -41,6 +41,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 19. [Vercel dashboard and local runtime](docs/18-deployment-and-runtime.md)
 20. [Total returns, terminal outcomes and fund benchmarks](docs/19-total-return-and-benchmarks.md)
 21. [Dated ranking optimization and source provenance](docs/20-ranking-index-and-provenance.md)
+22. [Consistent company reports and private dashboard reads](docs/21-consistent-company-reports.md)
 
 Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
 
@@ -75,6 +76,7 @@ To inspect the dated research example locally:
 dotnet run --project src/TradeTest.Cli -- import-research fixtures/synthetic-research.json research.sqlite
 dotnet run --project src/TradeTest.Cli -- health research.sqlite
 dotnet run --project src/TradeTest.Cli -- research research.sqlite 2026-04-01T00:00:00Z SYNTH-ONE revenue
+dotnet run --project src/TradeTest.Cli -- export-research research.sqlite 2026-04-01T00:00:00Z SYNTH-ONE revenue company.json
 ~~~
 
 New imports record a batch ID and payload hash. Repeating an applied batch returns `AlreadyApplied`; a rejected batch rolls back completely and is recorded as `Quarantined`. The `health` command reports stored row counts and recent import outcomes. Databases created by the earlier prototype have no batch history for their old rows, so importing overlapping IDs will quarantine the new batch; use a fresh database for the examples.

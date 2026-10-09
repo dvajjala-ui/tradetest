@@ -41,7 +41,7 @@ app.Use(async (context, next) =>
         return;
     }
     try { await next(context); }
-    catch (Exception exception) when (exception is SqliteException or InvalidDataException)
+    catch (Exception exception) when (exception is SqliteException or InvalidDataException or FormatException)
     {
         app.Logger.LogError("Research read failed ({ErrorType}).", exception.GetType().Name);
         if (!context.Response.HasStarted)
@@ -69,20 +69,14 @@ app.MapMethods("/api/snapshot", ["GET", "HEAD"], (HttpContext context) =>
 });
 app.MapGet("/api/research/health", async (CancellationToken ct) => store is null
     ? Results.NotFound(new { Error = "No research database is configured." })
-    : Results.Ok(new { Health = await store.GetResearchHealthAsync(ct), Imports = await store.GetImportHistoryAsync(ct: ct) }));
+    : Results.Ok(await store.ReadResearchHealthSnapshotAsync(ct: ct)));
 app.MapGet("/api/research/{securityId}", async (string securityId, string? asOf, string? query, CancellationToken ct) =>
 {
     if (store is null) return Results.NotFound(new { Error = "No research database is configured." });
     if (securityId.Length > 128 || string.IsNullOrWhiteSpace(securityId) || (query?.Length ?? 0) > 500 ||
         !DateTimeOffset.TryParse(asOf, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var at))
         return Results.BadRequest(new { Error = "Supply a security ID, an ISO asOf timestamp and a query up to 500 characters." });
-    var packet = ResearchServices.BuildPacket(await store.GetFactsAtAsync(at, securityId, ct), at);
-    var metrics = await store.GetMetricsAtAsync(at, securityId, ct);
-    var documents = await store.SearchDocumentsAsync(securityId, query ?? "", at, cancellationToken: ct);
-    return Results.Ok(new { packet.AsOf, packet.Hash, packet.Facts, Metrics = metrics,
-        Companies = new LongTermRanker().Rank(metrics, at),
-        Documents = documents.Select(d => new DashboardDocument(d.DocumentId, d.SecurityId, d.Publisher,
-            d.SourceUrl, d.PublishedAt, d.FirstKnownAt, d.LicenceId, d.ContentSha256)) });
+    return Results.Ok(await store.ReadCompanySnapshotAsync(securityId, at, query ?? "", ct));
 });
 await app.RunAsync();
 

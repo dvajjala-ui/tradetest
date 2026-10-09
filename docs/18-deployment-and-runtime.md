@@ -80,7 +80,7 @@ GET /api/research/health
 GET /api/research/SYNTH-ONE?asOf=2026-04-01T00:00:00Z&query=revenue
 ~~~
 
-`/api/snapshot` still contains the synthetic demo when a database is configured. The research routes are separate, authenticated reads. Do not treat the demo as a live account dashboard.
+`/api/snapshot` contains the synthetic demo when a database is configured. The research routes provide separate authenticated reads from a consistent database snapshot. The Company research screen can now query those routes or open a local company export; see [the company report workflow](21-consistent-company-reports.md). The demo is not a live account dashboard.
 
 ## Container option
 

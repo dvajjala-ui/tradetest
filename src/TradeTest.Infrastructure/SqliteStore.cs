@@ -95,14 +95,24 @@ public sealed partial class SqliteStore(string databasePath, bool readOnly = fal
         return events;
     }
 
-    private async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken)
+    private async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken, bool forceReadOnly = false)
     {
-        var connection = new SqliteConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
-        await using var pragma = connection.CreateCommand();
-        pragma.CommandText = "PRAGMA foreign_keys=ON;";
-        await pragma.ExecuteNonQueryAsync(cancellationToken);
-        return connection;
+        var options = new SqliteConnectionStringBuilder(_connectionString);
+        if (forceReadOnly) options.Mode = SqliteOpenMode.ReadOnly;
+        var connection = new SqliteConnection(options.ToString());
+        try
+        {
+            await connection.OpenAsync(cancellationToken);
+            await using var pragma = connection.CreateCommand();
+            pragma.CommandText = "PRAGMA foreign_keys=ON;";
+            await pragma.ExecuteNonQueryAsync(cancellationToken);
+            return connection;
+        }
+        catch
+        {
+            await connection.DisposeAsync();
+            throw;
+        }
     }
 
     private static DateTimeOffset ParseTime(string value) =>

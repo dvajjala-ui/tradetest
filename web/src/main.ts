@@ -1,6 +1,7 @@
 import './style.css';
-import { escapeHtml as e, parseSnapshot, safeUrl, validateApiUrl } from './safe.mjs';
-import type { Snapshot, Bar, Evaluation, Benchmark } from './types';
+import { escapeHtml as e, parseSnapshot, parseCompanyResearch, safeUrl, validateApiUrl } from './safe.mjs';
+import { fetchJson } from './transport.mjs';
+import type { Snapshot, Bar, Evaluation, Benchmark, Research, CompanyResearch } from './types';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 const views = ['overview', 'research', 'replay', 'studies', 'performance', 'deployment'] as const;
@@ -9,9 +10,17 @@ const labels: Record<View, string> = { overview: 'Overview', research: 'Company 
 let snapshot: Snapshot;
 let reportSource = 'Bundled example';
 let apiBase = '';
+let apiDraft = '';
 let apiToken = '';
 let isLoading = false;
+let loadVersion = 0;
+let companyReport: CompanyResearch | null = null;
+let companySource = '';
+let researchRequest = { securityId: '', asOf: '', query: '' };
+const activeResearch = (): Research => companyReport ?? snapshot.research;
 let query = '';
+let factsPage = 0;
+const factsPageSize = 50;
 let chosenSecurity = '';
 let flash = '';
 let flashError = false;
@@ -70,23 +79,35 @@ function overview(): string {
 const metricNames: Record<string, string> = { RevenueGrowth3YPercent: 'Revenue growth · 3 years', ReturnOnCapitalPercent: 'Return on capital', FreeCashFlowMarginPercent: 'Free cash flow margin', NetDebtToEbitda: 'Net debt / EBITDA', ShareDilution3YPercent: 'Share dilution · 3 years', Momentum12MPercent: 'Momentum · 12 months', AverageDailyTurnoverRupees: 'Average daily turnover' };
 
 function researchView(): string {
-  const research = snapshot.research;
-  const ids = [...new Set([...research.companies.map(c => c.securityId), ...research.facts.map(f => f.securityId)])];
+  const research = activeResearch();
+  const ids = [...new Set([...(companyReport ? [companyReport.securityId] : []), ...research.companies.map(c => c.securityId), ...research.facts.map(f => f.securityId)])];
   if (!ids.includes(chosenSecurity)) chosenSecurity = ids[0] ?? '';
   const company = research.companies.find(c => c.securityId === chosenSecurity);
   const metrics = research.metrics.filter(m => m.securityId === chosenSecurity);
-  return `<div class="page-title"><div><span class="eyebrow">LONG-TERM RESEARCH</span><h1>Company evidence</h1><p>Visible as of ${e(date(research.asOf))}. Source dates stay attached to each claim.</p></div>${tag('Dated packet', 'green')}</div>
+  return `<div class="page-title"><div><span class="eyebrow">LONG-TERM RESEARCH</span><h1>Company evidence</h1><p>Visible as of ${e(date(research.asOf))}. Source dates stay attached to each claim.</p></div>${tag(companyReport ? 'User-supplied research' : 'Synthetic packet', companyReport ? 'amber' : 'green')}</div>
+    ${researchControls()}
     <div class="research-toolbar"><label>Company <select id="company-select">${ids.map(id => `<option value="${e(id)}" ${id === chosenSecurity ? 'selected' : ''}>${e(id)}</option>`).join('')}</select></label><label class="search-box">${icon('search')}<input id="fact-search" type="search" value="${e(query)}" placeholder="Search claims or source IDs" aria-label="Search evidence" /></label></div>
-    <div class="research-heading"><div class="company-avatar">${e(chosenSecurity.slice(0, 1) || '?')}</div><div><h2>${e(chosenSecurity || 'No company')}</h2><p>Synthetic company · screen ${e(company?.modelVersion ?? 'not available')}</p></div><div class="score"><span class="eyebrow">SCREEN SCORE</span><strong>${company ? e(number(company.score)) : '—'}</strong></div></div>
+    <div class="research-heading"><div class="company-avatar">${e(chosenSecurity.slice(0, 1) || '?')}</div><div><h2>${e(chosenSecurity || 'No company')}</h2><p>${companyReport ? 'User-supplied evidence' : 'Synthetic company'} · screen ${e(company?.modelVersion ?? 'not available')}</p></div><div class="score"><span class="eyebrow">SCREEN SCORE</span><strong>${company ? e(number(company.score)) : '—'}</strong></div></div>
     ${company?.riskFlags.length ? `<div class="notice">Review flags: ${company.riskFlags.map(e).join(', ')}</div>` : ''}
     <div class="metric-grid">${metrics.map(m => `<article class="metric"><span>${e(metricNames[m.kind] ?? m.kind)}</span><strong>${e(m.kind === 'AverageDailyTurnoverRupees' ? rupees(m.value) : m.kind === 'NetDebtToEbitda' ? number(m.value) + '×' : number(m.value) + '%')}</strong><a href="#fact-${encodeURIComponent(m.sourceFactId)}" data-fact="${e(m.sourceFactId)}">${e(m.sourceFactId)} ↗</a></article>`).join('')}</div>
-    <section class="card">${cardHead('Claims and provenance', 'Verification labels here apply only to the synthetic fixture.')}<div id="fact-results">${factResults()}</div></section>
+    <section class="card">${cardHead('Claims and provenance', companyReport ? 'Verification labels come from the imported research; source review remains necessary.' : 'Verification labels here apply only to the synthetic fixture.')}<div id="fact-results">${factResults()}</div></section>
     <section class="card section-space">${cardHead('Source documents', `${research.documents.filter(d => d.securityId === chosenSecurity).length} documents · external links open separately`)}<div class="document-list">${research.documents.filter(d => d.securityId === chosenSecurity).map(d => `<article class="document"><div>${icon('research')}<div><h3>${e(d.publisher)}</h3><p>${e(d.documentId)} · published ${e(date(d.publishedAt))} · first known ${e(date(d.firstKnownAt))}</p></div><a class="button small" href="${e(safeUrl(d.sourceUrl))}" target="_blank" rel="noopener noreferrer">Source ${icon('arrow')}</a></div><dl><dt>Licence</dt><dd>${e(d.licenceId)}</dd><dt>SHA-256</dt><dd class="hash">${e(d.contentSha256)}</dd></dl></article>`).join('')}</div></section><p class="footnote">Packet hash <span class="hash">${e(research.packetHash)}</span>. A score is a screening result, not an estimate of future return.</p>`;
 }
 
+function researchControls(): string {
+  const request = { securityId: researchRequest.securityId || chosenSecurity, asOf: researchRequest.asOf || activeResearch().asOf, query: researchRequest.query };
+  return `<section class="card research-controls">${cardHead('Open dated company research', companyReport ? companySource : 'Use a local export or query your connected service.')}<div class="padded"><div class="button-row"><label class="button secondary">Open company report<input id="company-file" type="file" accept=".json,application/json" hidden /></label>${companyReport ? '<button class="button secondary" id="export-company">Export company report</button><button class="button secondary" id="restore-company">Restore example evidence</button>' : ''}</div>${apiBase ? `<form id="company-form" class="company-form"><label>Security ID<input name="securityId" maxlength="128" required value="${e(request.securityId)}" autocomplete="off" /></label><label>As of · ISO timestamp with time zone<input name="asOf" required value="${e(request.asOf)}" autocomplete="off" /></label><label>Find source documents<input name="query" maxlength="500" value="${e(request.query)}" placeholder="Revenue, debt, governance…" /></label><button class="button" type="submit" ${isLoading ? 'disabled' : ''}>Load company evidence</button></form>` : '<p class="footnote">Company files stay in browser memory. <a class="text-link" href="#deployment">Connect a read-only service →</a></p>'}${companyReport ? `<p class="footnote">Report hash <span class="hash">${e(companyReport.hash)}</span> · ${companyReport.matchingDocumentIds.length} sources matched the document query.</p>` : ''}</div></section>`;
+}
+
+function matchingFacts() {
+  return activeResearch().facts.filter(f => f.securityId === chosenSecurity && `${f.claim} ${f.factId} ${f.documentId}`.toLowerCase().includes(query.toLowerCase()));
+}
 function factResults(): string {
-  const facts = snapshot.research.facts.filter(f => f.securityId === chosenSecurity && `${f.claim} ${f.factId} ${f.documentId}`.toLowerCase().includes(query.toLowerCase()));
-  return facts.length ? `<div class="table-wrap"><table><thead><tr><th>Claim</th><th>First known</th><th>Source</th><th>Verification</th></tr></thead><tbody>${facts.map(f => `<tr id="fact-${e(f.factId)}"><td><strong class="claim">${e(f.claim)}</strong><span class="cell-detail">${e(f.factId)}</span></td><td class="nowrap">${e(date(f.firstKnownAt))}</td><td>${e(f.documentId)}</td><td>${tag(f.verification, f.verification === 'Verified' ? 'green' : 'amber')}</td></tr>`).join('')}</tbody></table></div>` : empty('No claims match this search.');
+  const facts = matchingFacts();
+  if (!facts.length) return empty('No claims match this search.');
+  const pages = Math.ceil(facts.length / factsPageSize); factsPage = Math.min(factsPage, pages - 1);
+  const start = factsPage * factsPageSize, visible = facts.slice(start, start + factsPageSize);
+  return `<div class="table-wrap"><table><thead><tr><th>Claim</th><th>First known</th><th>Source</th><th>Verification</th></tr></thead><tbody>${visible.map(f => `<tr id="fact-${e(f.factId)}"><td><strong class="claim">${e(f.claim)}</strong><span class="cell-detail">${e(f.factId)}</span></td><td class="nowrap">${e(date(f.firstKnownAt))}</td><td>${e(f.documentId)}</td><td>${tag(f.verification, f.verification === 'Verified' ? 'green' : 'amber')}</td></tr>`).join('')}</tbody></table></div><div class="table-pagination"><span>Showing ${e(number(start + 1, 0))}–${e(number(Math.min(start + factsPageSize, facts.length), 0))} of ${e(number(facts.length, 0))} claims</span>${pages > 1 ? `<div><button class="button small secondary" data-fact-page="-1" ${factsPage === 0 ? 'disabled' : ''}>Previous</button><span>Page ${factsPage + 1} of ${pages}</span><button class="button small secondary" data-fact-page="1" ${factsPage === pages - 1 ? 'disabled' : ''}>Next</button></div>` : ''}</div>`;
 }
 
 function replayView(): string {
@@ -122,55 +143,99 @@ function performanceView(): string {
 
 function deploymentView(): string {
   return `<div class="page-title"><div><span class="eyebrow">PORTABLE DASHBOARD · PERSISTENT ENGINE</span><h1>Deployment</h1><p>Run the web workspace locally or on Vercel. Keep the engine near its data source.</p></div>${tag('Read-only dashboard', 'green')}</div><div class="two-grid"><section class="card">${cardHead('Web dashboard', 'Static assets · Vercel or local')}<div class="deployment-summary">${icon('overview')}<h3>Fast to load. Simple to host.</h3><p>The bundled report uses synthetic data. A downloaded snapshot can also be opened privately in this browser.</p><dl><dt>Current report</dt><dd>${e(reportSource)}</dd><dt>Data</dt><dd>${e(snapshot.dataKind)}</dd><dt>Generated</dt><dd>${e(date(snapshot.generatedAt))} · ${e(time(snapshot.generatedAt))} IST</dd><dt>Broker</dt><dd>Disconnected</dd></dl><div class="button-row"><label class="button">Open snapshot<input id="snapshot-file" type="file" accept=".json,application/json" hidden /></label><button class="button secondary" id="reset-report">Restore example</button></div></div></section>
-    <section class="card">${cardHead('Persistent .NET service', 'Optional read-only connection')}<form id="api-form" class="api-form"><p>Use the local service for development, or an HTTPS service for remote access. The token stays in memory and is cleared on refresh.</p><label>Service URL<input type="url" name="url" required value="${e(apiBase)}" placeholder="http://127.0.0.1:5080" autocomplete="off" /></label><label>Access token<input type="password" name="token" placeholder="Required for a remote service" autocomplete="off" /></label><button class="button" type="submit" ${isLoading ? 'disabled' : ''}>Load service snapshot ${icon('arrow')}</button><p class="footnote">Remote connections need HTTPS and an allowed dashboard origin. Browser local-network permissions may be required for localhost.</p></form></section></div>
+    <section class="card">${cardHead('Persistent .NET service', 'Optional read-only connection')}<form id="api-form" class="api-form"><p>Use the local service for development, or an HTTPS service for remote access. The token stays in memory and is cleared on refresh.</p><label>Service URL<input type="url" name="url" required value="${e(apiDraft || apiBase)}" placeholder="http://127.0.0.1:5080" autocomplete="off" /></label><label>Access token<input type="password" name="token" placeholder="Required for a remote service" autocomplete="off" /></label><button class="button" type="submit" ${isLoading ? 'disabled' : ''}>Load service snapshot ${icon('arrow')}</button><p class="footnote">Remote connections need HTTPS and an allowed dashboard origin. Browser local-network permissions may be required for localhost.</p></form></section></div>
     <section class="card section-space">${cardHead('Activation gates', 'Code completion and trading evidence are tracked separately.')}<div class="gate-list">${snapshot.gates.map(g => `<article class="gate"><span class="gate-id">${e(g.id.toUpperCase())}</span><div><h3>${e(g.title)}</h3><p>${e(g.detail)}</p></div>${tag(g.state, g.state === 'Implemented' ? 'green' : g.state === 'Partial' ? 'amber' : '')}</article>`).join('')}</div></section><p class="footnote">Public deployments should contain only intentionally public data. API keys and broker credentials do not belong in the web build.</p>`;
 }
 
 function render(): void {
   const active = view();
   app.innerHTML = `<aside class="sidebar"><a class="brand" href="#overview"><span class="brand-mark">T</span><span>TradeTest<small>Research workspace</small></span></a><div class="workspace-label">WORKSPACE <span>IN</span></div><nav aria-label="Main navigation">${views.map(v => `<a href="#${v}" class="nav-item ${active === v ? 'active' : ''}" ${active === v ? 'aria-current="page"' : ''}>${icon(v)}<span>${labels[v]}</span></a>`).join('')}</nav><div class="sidebar-footer"><div class="offline-indicator"><i></i>PAPER / OFFLINE</div><p>India focused.<br/>Evidence comes first.</p><a href="https://github.com/dvajjala-ui/tradetest" target="_blank" rel="noopener noreferrer">Project repository ↗</a></div></aside>
-    <div class="workspace"><header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>${labels[active]}</strong></div><div class="topbar-actions">${tag(snapshot.dataKind + ' data', 'amber')}<button class="icon-button" id="refresh-report" title="Refresh report" aria-label="Refresh report" ${isLoading ? 'disabled' : ''}>${icon('refresh')}</button><button class="button small secondary" id="download-report">${icon('download')}<span>Export snapshot</span></button></div></header><main id="main" tabindex="-1">${flash ? `<div class="flash ${flashError ? 'error' : ''}" role="${flashError ? 'alert' : 'status'}">${e(flash)}<button id="dismiss-flash" aria-label="Dismiss message">×</button></div>` : ''}${({ overview, research: researchView, replay: replayView, studies: studiesView, performance: performanceView, deployment: deploymentView }[active])()}<footer class="main-footer"><span>TradeTest · ${e(snapshot.mode)} · ${e(reportSource)}</span><span>${e(snapshot.evidenceNote)}</span></footer></main></div>`;
+    <div class="workspace"><header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>${labels[active]}</strong></div><div class="topbar-actions">${tag(active === 'research' && companyReport ? 'User-supplied research' : snapshot.dataKind + ' data', 'amber')}<button class="icon-button" id="refresh-report" title="Refresh report" aria-label="Refresh report" ${isLoading ? 'disabled' : ''}>${icon('refresh')}</button><button class="button small secondary" id="download-report">${icon('download')}<span>Export snapshot</span></button></div></header><main id="main" tabindex="-1">${flash ? `<div class="flash ${flashError ? 'error' : ''}" role="${flashError ? 'alert' : 'status'}">${e(flash)}<button id="dismiss-flash" aria-label="Dismiss message">×</button></div>` : ''}${({ overview, research: researchView, replay: replayView, studies: studiesView, performance: performanceView, deployment: deploymentView }[active])()}<footer class="main-footer"><span>TradeTest · ${e(active === 'research' && companyReport ? 'RESEARCH / READ ONLY · ' + companySource : snapshot.mode + ' · ' + reportSource)}</span><span>${e(active === 'research' && companyReport ? 'Company reports contain user-supplied evidence. Source metadata and verification labels require independent review.' : snapshot.evidenceNote)}</span></footer></main></div>`;
   bind();
 }
 
 function bind(): void {
-  document.querySelector('#refresh-report')?.addEventListener('click', () => { void loadCurrent(); });
+  document.querySelector('#refresh-report')?.addEventListener('click', () => { if (view() === 'research' && companyReport) { if (companySource.startsWith('Local file:')) message('Open an updated company report to refresh this local file.'); else void loadCompany(); } else void loadCurrent(); });
   document.querySelector('#download-report')?.addEventListener('click', () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' }));
     const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'tradetest-snapshot.json'; anchor.click(); URL.revokeObjectURL(url);
   });
   document.querySelector('#dismiss-flash')?.addEventListener('click', () => { flash = ''; render(); });
-  document.querySelector('#company-select')?.addEventListener('change', event => { chosenSecurity = (event.target as HTMLSelectElement).value; query = ''; render(); });
-  document.querySelector('#fact-search')?.addEventListener('input', event => { query = (event.target as HTMLInputElement).value; document.querySelector('#fact-results')!.innerHTML = factResults(); });
+  document.querySelector('#company-select')?.addEventListener('change', event => { chosenSecurity = (event.target as HTMLSelectElement).value; query = ''; factsPage = 0; render(); });
+  document.querySelector('#fact-search')?.addEventListener('input', event => { query = (event.target as HTMLInputElement).value; factsPage = 0; document.querySelector('#fact-results')!.innerHTML = factResults(); });
+  document.querySelector('#fact-results')?.addEventListener('click', event => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-fact-page]'); if (!button || button.disabled) return;
+    factsPage = Math.max(0, factsPage + Number(button.dataset.factPage));
+    document.querySelector('#fact-results')!.innerHTML = factResults();
+  });
   document.querySelectorAll<HTMLAnchorElement>('[data-fact]').forEach(anchor => anchor.addEventListener('click', event => {
     event.preventDefault(); query = ''; const input = document.querySelector<HTMLInputElement>('#fact-search'); if (input) input.value = '';
+    factsPage = Math.floor(Math.max(0, matchingFacts().findIndex(f => f.factId === anchor.dataset.fact)) / factsPageSize);
     document.querySelector('#fact-results')!.innerHTML = factResults(); const row = document.getElementById(`fact-${anchor.dataset.fact}`); row?.scrollIntoView({ block: 'center', behavior: 'smooth' }); row?.classList.add('highlight');
   }));
+  document.querySelector('#company-form')?.addEventListener('submit', event => {
+    event.preventDefault(); const form = new FormData(event.target as HTMLFormElement);
+    researchRequest = { securityId: String(form.get('securityId') ?? ''), asOf: String(form.get('asOf') ?? ''), query: String(form.get('query') ?? '') };
+    void loadCompany();
+  });
+  document.querySelector('#company-file')?.addEventListener('change', async event => {
+    const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return;
+    const version = ++loadVersion; isLoading = false;
+    try {
+      if (file.size > 2 * 1024 * 1024) throw new Error('Company reports must be no larger than 2 MB.');
+      const next = parseCompanyResearch(JSON.parse(await file.text())); if (version !== loadVersion) return;
+      companyReport = next; companySource = 'Local file: ' + file.name; chosenSecurity = next.securityId; query = ''; factsPage = 0;
+      message('Company report opened locally. The file was not uploaded.');
+    } catch (error) { if (version === loadVersion) message(errorMessage(error), true); }
+  });
+  document.querySelector('#restore-company')?.addEventListener('click', () => { ++loadVersion; isLoading = false; companyReport = null; companySource = ''; chosenSecurity = ''; query = ''; factsPage = 0; message('Example evidence restored.'); });
+  document.querySelector('#export-company')?.addEventListener('click', () => {
+    if (!companyReport) return;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(companyReport, null, 2)], { type: 'application/json' }));
+    const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'tradetest-company-' + companyReport.securityId.replace(/[^a-zA-Z0-9_-]/g, '_') + '.json'; anchor.click(); URL.revokeObjectURL(url);
+  });
   document.querySelector('#snapshot-file')?.addEventListener('change', async event => {
     const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return;
+    const version = ++loadVersion; isLoading = false;
     try {
       if (file.size > 2 * 1024 * 1024) throw new Error('Snapshot files must be no larger than 2 MB.');
-      const next = parseSnapshot(JSON.parse(await file.text())); snapshot = next; reportSource = 'Local file: ' + file.name; apiBase = ''; apiToken = '';
+      const next = parseSnapshot(JSON.parse(await file.text())); if (version !== loadVersion) return;
+      snapshot = next; reportSource = 'Local file: ' + file.name; apiBase = ''; apiDraft = ''; apiToken = ''; companyReport = null; companySource = ''; chosenSecurity = ''; query = ''; factsPage = 0;
       message('Snapshot opened locally. The file was not uploaded to a server.');
-    } catch (error) { message(errorMessage(error), true); }
+    } catch (error) { if (version === loadVersion) message(errorMessage(error), true); }
   });
-  document.querySelector('#reset-report')?.addEventListener('click', () => { apiBase = ''; apiToken = ''; reportSource = 'Bundled example'; void loadCurrent(); });
+  document.querySelector('#reset-report')?.addEventListener('click', () => { apiBase = ''; apiDraft = ''; apiToken = ''; reportSource = 'Bundled example'; void loadCurrent(); });
   document.querySelector('#api-form')?.addEventListener('submit', async event => {
     event.preventDefault(); const form = new FormData(event.target as HTMLFormElement);
-    try { const base = validateApiUrl(String(form.get('url') ?? '')); const token = String(form.get('token') ?? ''); await fetchReport(base + '/api/snapshot', token, base); apiBase = base; apiToken = token; render(); }
+    apiDraft = String(form.get('url') ?? '');
+    try { const base = validateApiUrl(apiDraft); const token = String(form.get('token') ?? ''); if (await fetchReport(base + '/api/snapshot', token, base)) { apiBase = base; apiDraft = base; apiToken = token; researchRequest = { securityId: '', asOf: '', query: '' }; render(); } }
     catch (error) { message(errorMessage(error), true); }
   });
 }
 function errorMessage(error: unknown): string { return error instanceof Error ? error.message : 'Unable to load this report.'; }
 function message(value: string, error = false): void { flash = value; flashError = error; render(); }
-async function fetchReport(url: string, token = '', source = 'Bundled example'): Promise<void> {
-  isLoading = true; if (snapshot) render();
+async function fetchReport(url: string, token = '', source = 'Bundled example'): Promise<boolean> {
+  const version = ++loadVersion; isLoading = true; if (snapshot) render();
   try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(10000), headers: token ? { Authorization: 'Bearer ' + token } : {}, credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer' });
-    if (!response.ok) throw new Error(response.status === 401 ? 'The service rejected the access token.' : `Report request failed (${response.status}).`);
-    const text = await response.text(); if (text.length > 2 * 1024 * 1024) throw new Error('The service snapshot exceeds 2 MB.');
-    snapshot = parseSnapshot(JSON.parse(text)); reportSource = source; flash = ''; chosenSecurity = ''; query = '';
-  } finally { isLoading = false; if (snapshot) render(); }
+    const next = parseSnapshot(await fetchJson(url, token)); if (version !== loadVersion) return false;
+    snapshot = next; reportSource = source; flash = ''; chosenSecurity = ''; query = ''; factsPage = 0; companyReport = null; companySource = '';
+    return true;
+  } catch (error) { if (version !== loadVersion) return false; throw error; }
+  finally { if (version === loadVersion) { isLoading = false; if (snapshot) render(); } }
+}
+async function loadCompany(): Promise<void> {
+  if (!apiBase) { message('Connect a read-only service on the Deployment screen first.', true); return; }
+  const request = { ...researchRequest }, version = ++loadVersion;
+  isLoading = true; render();
+  try {
+    if (!request.securityId.trim() || request.securityId.length > 128 || request.query.length > 500 || !Number.isFinite(Date.parse(request.asOf)) || !/(Z|[+-]\d{2}:\d{2})$/i.test(request.asOf)) throw new Error('Supply a security ID and an ISO timestamp with an explicit time zone.');
+    const params = new URLSearchParams({ asOf: request.asOf, query: request.query });
+    const next = parseCompanyResearch(await fetchJson(apiBase + '/api/research/' + encodeURIComponent(request.securityId) + '?' + params, apiToken));
+    if (version !== loadVersion) return;
+    if (next.securityId !== request.securityId || Date.parse(next.asOf) !== Date.parse(request.asOf)) throw new Error('The service returned evidence for a different company or date.');
+    companyReport = next; companySource = apiBase; chosenSecurity = next.securityId; query = ''; factsPage = 0; flash = 'Dated company evidence loaded.'; flashError = false;
+  } catch (error) { if (version === loadVersion) { flash = errorMessage(error); flashError = true; } }
+  finally { if (version === loadVersion) { isLoading = false; render(); } }
 }
 async function loadCurrent(): Promise<void> {
   if (!apiBase && reportSource.startsWith('Local file:')) { message('This is a local file. Open an updated snapshot to refresh it.'); return; }

@@ -107,8 +107,7 @@ static async Task<int> MainAsync(string[] args)
             }
             case ["journal", var databasePath, var stream]:
             {
-                var store = new SqliteStore(databasePath);
-                await store.InitializeAsync();
+                var store = new SqliteStore(databasePath, readOnly: true);
                 var events = await store.ReadEventsAsync(stream);
                 Print(new { Stream = stream, EventCount = events.Count, LastHash = events.LastOrDefault()?.Hash, Events = events }, json);
                 return 0;
@@ -129,28 +128,29 @@ static async Task<int> MainAsync(string[] args)
             }
             case ["health", var databasePath]:
             {
-                var store = new SqliteStore(databasePath);
-                await store.InitializeAsync();
-                Print(new { Health = await store.GetResearchHealthAsync(), Imports = await store.GetImportHistoryAsync() }, json);
+                var store = new SqliteStore(databasePath, readOnly: true);
+                Print(await store.ReadResearchHealthSnapshotAsync(), json);
                 return 0;
             }
-            case ["research", var databasePath, var asOfText, var securityId, var search]:
+            case ["research", _, _, _, _]:
+            case ["export-research", _, _, _, _, _]:
             {
-                var asOf = DateTimeOffset.Parse(asOfText, System.Globalization.CultureInfo.InvariantCulture);
-                var store = new SqliteStore(databasePath);
-                await store.InitializeAsync();
-                var packet = ResearchServices.BuildPacket(await store.GetFactsAtAsync(asOf, securityId), asOf);
-                var ranked = new LongTermRanker().Rank(await store.GetMetricsAtAsync(asOf, securityId), asOf);
-                var citations = await store.SearchDocumentsAsync(securityId, search, asOf);
-                Print(new { packet.AsOf, packet.Version, packet.Hash, FactCount = packet.Facts.Count,
-                    Facts = ResearchServices.CiteCompany(packet, securityId, search),
-                    Documents = citations.Select(d => new { d.DocumentId, d.SourceUrl, d.PublishedAt,
-                        d.FirstKnownAt, d.ContentSha256, d.LicenceId }),
-                    RankedCompanies = ranked }, json);
+                var asOf = DateTimeOffset.Parse(args[2], System.Globalization.CultureInfo.InvariantCulture);
+                var report = await new SqliteStore(args[1], readOnly: true).ReadCompanySnapshotAsync(args[3], asOf, args[4]);
+                if (args[0] == "export-research")
+                {
+                    string output = Path.GetFullPath(args[5]);
+                    if (output == Path.GetFullPath(args[1]) || output == Path.GetFullPath(args[1]) + "-wal" || output == Path.GetFullPath(args[1]) + "-shm")
+                        throw new ArgumentException("The output must not overwrite the research database or its journal files.");
+                    Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+                    await File.WriteAllTextAsync(output, JsonSerializer.Serialize(report, ResearchJson.OutputOptions));
+                    Print(new { Output = output, report.SchemaVersion, report.SecurityId, report.AsOf, report.Hash }, json);
+                }
+                else Print(report, ResearchJson.OutputOptions);
                 return 0;
             }
             default:
-                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | build-total-return <input.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words>");
+                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | build-total-return <input.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words> | export-research <db.sqlite> <as-of-ISO> <security-id> <search-words> <output.json>");
                 return 2;
         }
     }

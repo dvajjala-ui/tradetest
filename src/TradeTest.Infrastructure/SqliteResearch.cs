@@ -232,10 +232,18 @@ public sealed partial class SqliteStore
         string? securityId = null, CancellationToken cancellationToken = default)
     {
         await using var connection = await OpenAsync(cancellationToken);
+        return await ReadFactsAtAsync(connection, null, asOf, securityId, cancellationToken);
+    }
+
+    private static async Task<IReadOnlyList<SourceFact>> ReadFactsAtAsync(SqliteConnection connection,
+        SqliteTransaction? transaction, DateTimeOffset asOf, string? securityId, CancellationToken cancellationToken)
+    {
         await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
         command.CommandText = """
             SELECT f.fact_id,f.document_id,f.security_id,f.claim,f.first_known_at,f.verification,f.supersedes_id
             FROM facts f WHERE f.first_known_at <= $asof
+            AND NOT EXISTS(SELECT 1 FROM facts c WHERE c.supersedes_id=f.fact_id AND c.first_known_at <= $asof)
             AND NOT EXISTS(SELECT 1 FROM documents d WHERE d.supersedes_id=f.document_id AND d.first_known_at <= $asof)
             """ + (securityId is null ? "" : " AND f.security_id=$security") + " ORDER BY f.fact_id";
         command.Parameters.AddWithValue("$asof", Utc(asOf));
@@ -252,13 +260,20 @@ public sealed partial class SqliteStore
         string? securityId = null, CancellationToken cancellationToken = default)
     {
         await using var connection = await OpenAsync(cancellationToken);
+        return await ReadMetricsAtAsync(connection, null, asOf, securityId, cancellationToken);
+    }
+
+    private static async Task<IReadOnlyList<CompanyMetric>> ReadMetricsAtAsync(SqliteConnection connection,
+        SqliteTransaction? transaction, DateTimeOffset asOf, string? securityId, CancellationToken cancellationToken)
+    {
         await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
         command.CommandText = """
             SELECT m.security_id,m.kind,m.value,m.first_known_at,m.source_fact_id,m.verification
             FROM metrics m JOIN facts f ON f.fact_id=m.source_fact_id WHERE m.first_known_at <= $asof
             AND NOT EXISTS(SELECT 1 FROM facts c WHERE c.supersedes_id=f.fact_id AND c.first_known_at <= $asof)
             AND NOT EXISTS(SELECT 1 FROM documents d WHERE d.supersedes_id=f.document_id AND d.first_known_at <= $asof)
-            """ + (securityId is null ? "" : " AND m.security_id=$security") + " ORDER BY m.security_id,m.kind,m.first_known_at";
+            """ + (securityId is null ? "" : " AND m.security_id=$security") + " ORDER BY m.security_id,m.kind,m.first_known_at,m.source_fact_id";
         command.Parameters.AddWithValue("$asof", Utc(asOf));
         if (securityId is not null) command.Parameters.AddWithValue("$security", securityId);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -273,11 +288,19 @@ public sealed partial class SqliteStore
     public async Task<IReadOnlyList<SourceDocument>> SearchDocumentsAsync(string securityId, string query,
         DateTimeOffset asOf, int limit = 8, CancellationToken cancellationToken = default)
     {
+        await using var connection = await OpenAsync(cancellationToken);
+        return await SearchDocumentsAsync(connection, null, securityId, query, asOf, limit, cancellationToken);
+    }
+
+    private static async Task<IReadOnlyList<SourceDocument>> SearchDocumentsAsync(SqliteConnection connection,
+        SqliteTransaction? transaction, string securityId, string query, DateTimeOffset asOf,
+        int limit, CancellationToken cancellationToken)
+    {
         if (limit < 1 || limit > 100) throw new ArgumentOutOfRangeException(nameof(limit));
         var words = Regex.Matches(query, "[\\p{L}\\p{N}]+", RegexOptions.CultureInvariant).Select(m => m.Value).Take(12).ToArray();
         if (words.Length == 0) return [];
-        await using var connection = await OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
         command.CommandText = """
             SELECT d.document_id,d.security_id,d.source_url,d.publisher,d.published_at,d.first_known_at,
                 d.retrieved_at,d.content_hash,d.licence_id,d.parser_version,d.supersedes_id,d.content
@@ -293,16 +316,21 @@ public sealed partial class SqliteStore
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         var docs = new List<SourceDocument>();
         while (await reader.ReadAsync(cancellationToken))
-            docs.Add(new SourceDocument(reader.GetString(0), reader.GetString(1), new Uri(reader.GetString(2)),
-                reader.GetString(3), ParseTime(reader.GetString(4)), ParseTime(reader.GetString(5)), ParseTime(reader.GetString(6)),
-                reader.GetString(7), reader.GetString(8), reader.GetString(9), reader.IsDBNull(10) ? null : reader.GetString(10), reader.GetString(11)));
+            docs.Add(ReadSourceDocument(reader));
         return docs;
     }
 
     public async Task<ResearchHealthReport> GetResearchHealthAsync(CancellationToken ct = default)
     {
         await using var connection = await OpenAsync(ct);
+        return await ReadResearchHealthAsync(connection, null, ct);
+    }
+
+    private static async Task<ResearchHealthReport> ReadResearchHealthAsync(SqliteConnection connection,
+        SqliteTransaction? transaction, CancellationToken ct)
+    {
         await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
         command.CommandText = """
             SELECT (SELECT COUNT(*) FROM documents),(SELECT COUNT(*) FROM facts),(SELECT COUNT(*) FROM metrics),
                 (SELECT COUNT(*) FROM facts WHERE verification != 2),
@@ -319,7 +347,15 @@ public sealed partial class SqliteStore
     {
         if (limit is < 1 or > 1000) throw new ArgumentOutOfRangeException(nameof(limit));
         await using var connection = await OpenAsync(ct);
+        return await ReadImportHistoryAsync(connection, null, limit, ct);
+    }
+
+    private static async Task<IReadOnlyList<ResearchImportAudit>> ReadImportHistoryAsync(SqliteConnection connection,
+        SqliteTransaction? transaction, int limit, CancellationToken ct)
+    {
+        if (limit is < 1 or > 1000) throw new ArgumentOutOfRangeException(nameof(limit));
         await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
         command.CommandText = "SELECT batch_id,payload_hash,status,attempted_at,document_count,fact_count,metric_count,error FROM research_imports ORDER BY attempted_at DESC,batch_id LIMIT $limit";
         command.Parameters.AddWithValue("$limit", limit);
         await using var reader = await command.ExecuteReaderAsync(ct);

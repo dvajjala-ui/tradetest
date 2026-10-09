@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tradetest-dashboard-v1",
-  "generatedAt": "2026-10-08T15:22:09.7158263+00:00",
+  "generatedAt": "2026-10-09T05:40:30.1660243+00:00",
   "dataKind": "Synthetic",
   "mode": "PAPER / OFFLINE",
   "evidenceNote": "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
@@ -1028,14 +1028,14 @@
     {
       "id": "g1",
       "title": "Deterministic replay",
-      "state": "Implemented",
-      "detail": "Offline simulation, fee-aware risk and hash-chained journal; synthetic verification."
+      "state": "Partial",
+      "detail": "Offline simulation, fee-aware risk and audit journal; licensed references, feed faults and reconciliation remain."
     },
     {
       "id": "g2",
       "title": "Company evidence",
       "state": "Partial",
-      "detail": "Dated facts, citations, correction withdrawal and atomic imports; vendor parsers remain."
+      "detail": "Dated source packets, atomic imports and consistent private reports; licensed parsers and cross-source checks remain."
     },
     {
       "id": "g3",

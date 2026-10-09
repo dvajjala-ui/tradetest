@@ -81,8 +81,8 @@ public static class DashboardSnapshotBuilder
             await performanceTask,
             [
                 new("g0", "Licensed data", "Pending", "Vendor access, historical coverage and licences must be confirmed."),
-                new("g1", "Deterministic replay", "Implemented", "Offline simulation, fee-aware risk and hash-chained journal; synthetic verification."),
-                new("g2", "Company evidence", "Partial", "Dated facts, citations, correction withdrawal and atomic imports; vendor parsers remain."),
+                new("g1", "Deterministic replay", "Partial", "Offline simulation, fee-aware risk and audit journal; licensed references, feed faults and reconciliation remain."),
+                new("g2", "Company evidence", "Partial", "Dated source packets, atomic imports and consistent private reports; licensed parsers and cross-source checks remain."),
                 new("g3", "Strategy evidence", "Partial", "Frozen chronological studies and walk-forward. No market edge has been established."),
                 new("g4", "Live-data paper sessions", "Pending", "Authenticated no-order feed, reconciliation, fault drills and operational sessions remain."),
                 new("g5", "Broker orders", "Not enabled", "Requires separately reviewed integration and evidence gates."),
