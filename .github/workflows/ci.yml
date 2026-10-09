@@ -18,6 +18,8 @@ jobs:
           dotnet-version: 10.0.x
       - run: dotnet build TradeTest.slnx --configuration Release --nologo
       - run: dotnet test TradeTest.slnx --configuration Release --no-build --nologo
+      - name: Exercise the offline quick start
+        run: python3 scripts/run-offline-check.py --no-build
       - uses: actions/setup-node@v5
         with:
           node-version: 24

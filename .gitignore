@@ -20,3 +20,5 @@ secrets/
 .vercel/
 **/.vercel/
 web/test-results/
+**/__pycache__/
+*.pyc

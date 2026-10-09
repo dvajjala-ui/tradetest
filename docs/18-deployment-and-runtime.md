@@ -94,6 +94,8 @@ GET /api/research/SYNTH-ONE?asOf=2026-04-01T00:00:00Z&query=revenue
 
 ## Container option
 
+The repeatable private runtime is now [deploy/compose.yaml](../deploy/compose.yaml). [Document 24](24-setup-budget-and-learning.md) gives the selected VM size, budget, environment generation, loopback binding and SSH tunnel instructions. The default Compose service serves synthetic reports; it mounts no private database and runs no ingestion worker.
+
 ~~~bash
 docker build -f deploy/Dockerfile -t tradetest-api .
 ~~~

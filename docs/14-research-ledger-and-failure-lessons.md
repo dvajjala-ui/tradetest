@@ -1,6 +1,6 @@
 # Research ledger and lessons to encode
 
-As-of 2026-10-08. This ledger separates direct evidence from anecdotes and project hypotheses. It is a starting research base, not a claim that an intraday or stock-picking edge has been found.
+As-of 2026-10-09. This ledger separates direct evidence from anecdotes and project hypotheses. It is a starting research base, not a claim that an intraday or stock-picking edge has been found.
 
 | Finding | Evidence quality | What TradeTest will do |
 | --- | --- | --- |
@@ -11,7 +11,8 @@ As-of 2026-10-08. This ledger separates direct evidence from anecdotes and proje
 | A Dhan-linked bot poster identified a **rolling-strike/contract identity bug** that made earlier logged P&L false. The later posted ₹8,691 day was expressly a **live-data paper-trading** result with a flat assumed cost, not broker-confirmed profit. | Self-report and forward paper experiment. [Bug correction](https://www.reddit.com/r/IndiaAlgoTrading/comments/1udf1qv/day_0/), [paper result clarification](https://www.reddit.com/r/IndiaAlgoTrading/comments/1uedlwj/day_1_more_info_on_my_profile/) | Immutable instrument IDs, actual fills, contract-note reconciliation, and clear PAPER versus LIVE labels everywhere. The earlier repo summary blurred this distinction. |
 | Traders describe spread, latency and slippage erasing backtest profits. | Anecdote consistent with execution mechanics, not an estimated failure rate. [Reddit discussion](https://www.reddit.com/r/BhartiyaStockMarket/comments/1tfobo7/algo_trading_in_india_if_backtests_work_but_live/) | Collect bid/ask and intent/ack/fill timestamps; stress slippage and compare simulated versus actual fills. |
 | SEBI warned investors about risks in SME securities and unverified social media narratives. | Regulator advisory. [SEBI](https://www.sebi.gov.in/media-and-notifications/press-releases/aug-2024/advisory-regarding-investment-in-securities-of-the-companies-listed-on-the-sme-segment-of-stock-exchanges_86205.html) | Small-cap screen requires liquidity, governance, source provenance, dilution and surveillance checks; no penny-price shortcut. |
-| Groww's intraday history reaches only the last three months, while daily/weekly history lists full history. | Current primary API docs. [Groww](https://groww.in/trade-api/docs/curl/historical-data) | Price a longer licensed intraday dataset before claiming a multi-regime backtest; lane B can initially use daily data after quality checks. |
+| Groww's replacement historical endpoint documents coverage from 2020; the earlier three-month intraday limit describes a deprecated endpoint. | Current primary [replacement docs](https://groww.in/trade-api/docs/curl/backtesting), [deprecated docs](https://groww.in/trade-api/docs/curl/historical-data). | Verify actual completeness, actions, delisted coverage and licence before pricing missing history or claiming a multi-regime test. |
+| LLM pretraining can contain outcomes from the period being backtested, despite dated input packets. | Research on temporal contamination: [Glasserman/Lin](https://arxiv.org/abs/2309.17322), [Lopez-Lira/Tang/Zhu](https://arxiv.org/abs/2504.14765). | Historical masking is not proof of unbiased model skill; freeze versions and use prospective paper/shadow comparisons. |
 | Exchange market/corporate data reuse is subject to product terms and agreements. | Exchange policy. [NSE](https://www.nseindia.com/static/market-data/nse-data-policy) | Maintain source/licence registry and seek a licensed feed for scale. |
 
 ## Research workflow before writing a strategy
@@ -27,6 +28,8 @@ As-of 2026-10-08. This ledger separates direct evidence from anecdotes and proje
 ## AI evaluation harness
 
 Construct a dated set of candidate/company cases with original source excerpts and later outcomes hidden from the model. Include contradictory filings, stale news, fabricated social claims, split-adjusted chart traps, exchange holidays, flat/volatile days, partial fills and missing data. Evaluate: unsupported factual claims, citation accuracy, calibrated scores, reject/abstain quality, incremental net P&L after costs, latency p95/p99, token spend, and stability across model/prompt updates. Security test prompt injection inside retrieved pages and leaked broker-tool requests. Only then decide whether Groq, Luna, Sol, Astra, Codex, the user's additional named AI tool, or no LLM should occupy each role.
+
+Hiding supplied outcomes does not remove knowledge already present in a model's training. Keep historical contract/citation checks distinct from prospective predictive validation; see [the learning protocol](24-setup-budget-and-learning.md).
 
 ## Evidence needed for percentage claims
 

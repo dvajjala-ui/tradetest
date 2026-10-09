@@ -3,7 +3,7 @@
 Read README.md, the historical context in docs/00-conversation-context.md, and the current proposal in docs/12-master-implementation-plan.md through docs/14-research-ledger-and-failure-lessons.md before making architectural changes.
 
 ## Mission
-Plan an auditable India-focused research platform with **separate** intraday and long-term investing lanes. Groww and a ₹5,000 initial intraday live pilot are provisional assumptions; infrastructure is funded separately. Prove or reject improvement after real costs against rules-only and passive baselines.
+Plan an auditable India-focused research platform with **separate** intraday and long-term investing lanes. The user delegated setup/broker selection: document 24 recommends a persistent 2-vCPU/4-GiB Linux VM and Upstox read-only market data for the first integration. Execution broker selection is still open; current simulator charges use Groww assumptions. The ₹5,000 intraday live pilot remains provisional and is not activated; infrastructure is funded separately. Prove or reject improvement after real costs against rules-only and passive baselines.
 
 ## Non-negotiable architecture
 1. AI never gets unrestricted broker authority.
@@ -28,3 +28,7 @@ Follow the G0–G4 sequence in docs/12-master-implementation-plan.md. Start with
 
 ## Safety gate
 Do not enable real-money LIVE mode merely because code compiles or a backtest is positive. Require engineering fault tests, cost-aware backtesting, live-data paper trading and broker reconciliation first.
+
+## Setup and learning checkpoint
+
+Read docs/24-setup-budget-and-learning.md for the current cost assumptions, one-command offline check and private Compose API runtime. The app has no Upstox/Groww or actual AI provider adapter, scheduled real-data ingestion, adaptive model fitting, drift promotion or automatic architecture changes. Historical LLM tests may contain pretrained future knowledge; use prospective frozen-version comparisons for predictive validation. More indexed context is retrieval, not automatic model training.

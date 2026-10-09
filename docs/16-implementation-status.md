@@ -18,10 +18,16 @@ Use the .NET 10 SDK and run `dotnet test TradeTest.slnx`. The current suite has 
 
 ## Immediate build sequence
 
-1. Obtain a written data-use/coverage decision for Groww history and, if needed, NSE datasets. Record total price and missing fields before buying access.
+1. Verify the proposed Upstox read-only data access, coverage and usage terms; compare Groww's replacement historical endpoint and licensed NSE datasets where needed. Record missing fields and total price before paid access. [Setup and learning plan](24-setup-budget-and-learning.md).
 2. Populate the security master/calendar and return builder with licensed dated records. Reconcile adjustments and terminal outcomes against an independent source; model unsupported actions explicitly.
 3. Connect licensed ingestion to the atomic import/quarantine path, add parser correction jobs, cross-source checks, and a quality dashboard.
 4. Register hypotheses and evaluation dates before applying real history. Run the walk-forward and holdout harness, retain every failed variant, and reconcile an actual investable passive benchmark.
 5. Only after authorized read access exists, add a no-order live feed adapter and measure paper-session reliability, latency, and reconciliation.
 
 There is no defensible percentage chance of profit yet. The measured percentages in these fixtures are deliberately artificial. The [broker and cost report](13-broker-and-cost-report.md) remains the planning estimate; actual spend starts only when a subscription or data purchase is selected after current terms are checked.
+
+## Fast setup and learning readiness
+
+`python3 scripts/run-offline-check.py` builds and exercises the synthetic workflows, exporting a fresh company report, persisted replay journal and report-hash manifest. `deploy/compose.yaml` and the one-time environment generator provide a private, token-protected, non-root demo API runtime. They do not provision a VM or implement a background ingestion worker.
+
+The indexed knowledge foundation exists, but automated real-data ingestion, nightly packets, actual AI provider calls, adaptive fitting, drift monitoring and AI-created architecture changes remain planned. [Document 24](24-setup-budget-and-learning.md) specifies the initial monthly budget and the validation/promotion boundaries.

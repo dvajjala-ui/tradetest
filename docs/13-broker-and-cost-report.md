@@ -1,17 +1,18 @@
 # Broker procurement and cost report
 
-Checked 2026-10-08. Public list prices and features may change before purchase; taxes, account type, exchange, turnover and promotions affect the final bill. This is a planning estimate, not a quote.
+Checked 2026-10-09. Public list prices and features may change before purchase; taxes, account type, exchange, turnover and promotions affect the final bill. This is a planning estimate, not a quote. [Document 24](24-setup-budget-and-learning.md) selects the initial runtime and monthly budget.
 
 ## Broker shortlist
 
 | Broker | Public API/data offer seen | Best reason to test | Gap to verify before selection |
 | --- | --- | --- | --- |
-| **Groww** | ₹499 + tax/month covers order, live and historical APIs; live feed and cash OCO documented. Minute-bar history is last three months; daily/weekly list full history. [API](https://groww.in/trade-api), [history](https://groww.in/trade-api/docs/curl/historical-data), [OCO](https://groww.in/trade-api/docs/curl/smart-orders) | Existing project assumption/account path; single subscription for pilot | Auth approval workflow, real cash/MIS OCO behavior, reference retry semantics, feed freshness and fill quality |
+| **Upstox** | Free read-only [Analytics Token](https://upstox.com/developer/api-documentation/analytics-token/); cannot place or modify orders | Initial no-order data integration | Actual coverage, licence and request limits; adapter remains to build |
+| **Groww** | ₹499 + tax/month covers order, live and historical APIs; live feed and cash OCO documented. Replacement candles endpoint documents data from 2020. [API](https://groww.in/trade-api), [history](https://groww.in/trade-api/docs/curl/backtesting), [OCO](https://groww.in/trade-api/docs/curl/smart-orders) | Existing simulator charge assumptions; single subscription for a later pilot | Auth approval workflow, actual history/adjustments, real cash/MIS OCO behavior, reference retry semantics, feed freshness and fill quality |
 | **Zerodha Kite Connect** | Personal order/portfolio tier free; Connect with real-time WebSocket and historical candles ₹500/month. [Pricing](https://zerodha.com/products/api/) | Mature .NET client and long-running ecosystem | Historical depth/licence, order controls, total charges, actual measured latency and account setup |
 | **DhanHQ** | Trading API described as free; data subscription ₹499 + applicable taxes/month. [Access](https://dhan.co/support/platforms/dhanhq-api/how-to-access-dhan-api/), [pricing](https://dhan.co/pricing/) | Trading/data split and documented APIs | Data entitlement/history, smart-order protections, brokerage and authenticated behavior |
 | **FYERS** | Trading API advertised free with live/historical data; C# listed, Prime for expanded access. Static IP needed for order placement. FYERS also advertises an account-context MCP integration. [API](https://fyers.in/products/api) | Low public API subscription cost and direct C# path | Confirm data limits/licence, Prime need, exact order controls, latency and MCP permissions; MCP gets read-only research access at most in V1 |
 
-**Provisional choice: Groww for the first authenticated proof of concept**, because the repo already targets it and the documented feed, reference lookup and OCO fit the pilot. Keep `IMarketData` and `IExecutionBroker` adapters so the broker can be changed if measured coverage, reliability or cost is worse. The cheapest subscription is not automatically the cheapest executed strategy.
+**Initial data choice: Upstox read-only access**, with no order permission. Groww remains a candidate for future execution; the current simulator uses its charge assumptions. Keep market-data and execution adapters separate and compare measured coverage, reliability and after-cost fills before selecting an execution broker. The cheapest subscription is not automatically the cheapest executed strategy. The old Groww three-month minute-bar limit applies to the deprecated endpoint, not its replacement.
 
 ### Steps to obtain Groww access, after plan approval
 

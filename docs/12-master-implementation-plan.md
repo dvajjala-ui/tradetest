@@ -2,6 +2,8 @@
 
 Status: **G0–G4 approved; offline implementation underway**. Research checked on 2026-10-08 (India). [Current implementation status](16-implementation-status.md) records progress and open gates. Broker purchases and real-money activation retain their separate G5/G6 reviews. The older conversation record in `00-conversation-context.md` remains a history of the original intraday idea.
 
+2026-10-09 setup update: the user delegated the runtime/broker recommendation. [Document 24](24-setup-budget-and-learning.md) selects a small persistent Linux VM and Upstox's read-only data access for the first integration; execution broker selection remains open. No provider adapter or subscription has been activated.
+
 ## 1. Decision to make
 
 Build one evidence and accounting platform with **two separately measured strategies**:
@@ -86,7 +88,7 @@ Core interfaces: `IMarketDataFeed`, `IHistoricalDataSource`, `IDocumentSource`, 
 
 ### Data acquisition order
 
-1. Start with Groww authenticated live/feed data, order/fill/position records, and its historical endpoints for the pilot. Groww documents up to 1,000 feed subscriptions; its 1/5/10-minute candle history reaches **the last 3 months**, while daily and weekly candles list **full history**. This is enough for connection validation, not necessarily a robust intraday multi-regime backtest. [Groww feed](https://groww.in/trade-api/docs/python-sdk/feed); [Groww historical data](https://groww.in/trade-api/docs/curl/historical-data).
+1. Start with an authenticated read-only market-data integration; Upstox is the current initial data choice. Groww remains an alternative: its replacement [historical candles endpoint](https://groww.in/trade-api/docs/curl/backtesting) documents coverage from 2020. The earlier last-three-month intraday limit belongs to its [deprecated endpoint](https://groww.in/trade-api/docs/curl/historical-data). Verify account entitlements, completeness and permitted use before relying on either source for a multi-regime test.
 2. Collect NSE/BSE filings, corporate actions and regulators' releases with timestamps and document IDs. Define licensing and a legal access method before automated bulk ingestion. Request a quote for longer intraday and point-in-time corporate data if the pilot's historical depth is insufficient. [NSE historical products](https://www.nseindia.com/static/market-data/eod-historical-data-subscription); [NSE corporate data](https://www.nseindia.com/static/market-data/corporate-data-subscription).
 3. Add a paid news source only if a controlled test shows an incremental gain after its cost and publication delays. Community content is tagged unverified; it can nominate a claim for checking, never create a verified fact.
 4. Run daily data-health reports: missing bars, duplicate events, gaps, clock skew, stale bid/ask, inconsistent adjusted prices, filing revisions, cross-source disagreements and parser failures. Quarantine affected symbols/periods.

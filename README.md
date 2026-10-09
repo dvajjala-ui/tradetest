@@ -9,7 +9,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 - A proposed ₹5,000 restricted intraday live pilot, pending reconfirmation; a separately budgeted long-term investing lane.
 - Infrastructure/API costs paid separately.
 - A short, selective trading session rather than continuous overtrading.
-- Groww Trading API as the provisional first broker, with an adapter boundary and a broker comparison before purchase.
+- Upstox read-only market data as the first proposed integration; execution broker selection remains open, with replaceable adapters and a comparison before purchase.
 - Deterministic C# code for indicators, risk controls, order validation, position monitoring, kill switches and audit logging.
 - A rules-only baseline, with Groq-hosted GPT-OSS and OpenAI Luna/Sol/Astra added only for roles that pass an evidence-based evaluation.
 - Codex, Claude, Gemini and other available AI tools as research/review assistants where useful.
@@ -44,8 +44,9 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 22. [Consistent company reports and private dashboard reads](docs/21-consistent-company-reports.md)
 23. [Deployment, measured gains and current costs](docs/22-release-and-runtime-costs.md)
 24. [Recorded AI contract checks and evaluation](docs/23-recorded-ai-evaluation.md)
+25. [Selected setup, monthly budget and learning plan](docs/24-setup-budget-and-learning.md)
 
-Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
+Documents 00–11 preserve the original intraday discussion and early planning assumptions. Use the current implementation status and later dated reports when assumptions differ. Document 24 selects the initial VM/data setup and corrects the older Groww historical-coverage claim.
 
 ## Open the dashboard
 
@@ -66,6 +67,8 @@ From the repository root, `dotnet run --project src/TradeTest.Api` runs that ser
 ## Run the offline prototype
 
 Install the .NET 10 SDK, then run from the repository root:
+
+For a single command, also install Python 3 and run `python3 scripts/run-offline-check.py`. It builds the CLI and creates fresh synthetic evaluation, company and journal reports under ignored `artifacts/`, with a hash manifest. It makes no broker or model API calls. [The setup guide](docs/24-setup-budget-and-learning.md) includes the private Docker Compose runtime and separates implemented features from the learning roadmap.
 
 ~~~bash
 dotnet test TradeTest.slnx
