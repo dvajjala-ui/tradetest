@@ -23,3 +23,20 @@ test('remote API URLs require HTTPS and do not carry credentials or query tokens
   assert.throws(() => validateApiUrl('https://service.example?token=secret'));
   assert.throws(() => validateApiUrl('https://name:secret@service.example'));
 });
+test('recorded AI imports cannot mislabel mode, override rules, or change totals without matching cases', () => {
+  assert.equal(parseSnapshot(fixture).aiEvaluation.continuedCount, 2);
+  for (const mutate of [
+    value => { value.aiEvaluation.mode = 'LIVE'; },
+    value => { value.aiEvaluation.knownRecordedChargeUsd = -1; },
+    value => { value.aiEvaluation.continuedCount = 9; },
+    value => { value.aiEvaluation.cases[0].review.assessment.modelId = 'other-model'; },
+    value => { value.aiEvaluation.cases[0].rulesEligible = false; },
+    value => { value.aiEvaluation.cases[4].review.allowsFurtherReview = true; },
+    value => { value.aiEvaluation.cases[0].recordedFilterCandidateNetPnlRupees = 999; },
+    value => { value.aiEvaluation.cases[0].review.usage = null; },
+    value => { value.aiEvaluation.cases[0].review.assessment.decision = 'Buy'; }
+  ]) {
+    const changed = structuredClone(fixture); mutate(changed);
+    assert.throws(() => parseSnapshot(changed));
+  }
+});

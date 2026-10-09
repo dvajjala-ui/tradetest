@@ -2,6 +2,8 @@
 
 > Original intraday sketch. The current plan also requires point-in-time source/licence metadata, long-term thesis contracts, and a rules-only baseline before model rollout. See [12-master-implementation-plan.md](12-master-implementation-plan.md).
 
+The implemented recorded-assessment contract is [dated candidate review v1](23-recorded-ai-evaluation.md), with an [explicit JSON schema](../contracts/ai-assessment-v1.schema.json). The expanded contracts below remain proposals; they are not the current executable schema.
+
 ## Shared model rules
 You are a trade-candidate reviewer, not an autonomous broker. Use only supplied market data and verified facts. Never invent current prices/news. Do not change the configured strategy, position size or risk settings. Do not recommend averaging down or martingale. If evidence is stale/insufficient/contradictory, reject or wait. Return only the required JSON.
 

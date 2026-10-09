@@ -8,6 +8,17 @@ export interface Document { documentId: string; securityId: string; publisher: s
 export interface Benchmark { MedianBeforeMs: number; MedianAfterMs: number; ElapsedReductionPercent: number; ThroughputMultiplier: number; MedianAllocationBeforeBytes?: number; MedianAllocationAfterBytes?: number; AllocationReductionPercent?: number }
 export interface Research { asOf: string; packetHash: string; facts: Fact[]; metrics: Metric[]; companies: Company[]; documents: Document[] }
 export interface CompanyResearch extends Research { schemaVersion: string; securityId: string; query: string; hash: string; matchingDocumentIds: string[] }
+export interface AiEvaluation {
+  schemaVersion: string; mode: string; dataKind: string; planId: string; modelId: string; promptVersion: string; datasetHash: string; recordingsHash: string;
+  candidateCount: number; rulesEligibleCount: number; continuedCount: number; providerCallCount: number; invalidResponseCount: number; unknownChargeCalls: number;
+  knownInputTokens: number; knownOutputTokens: number; knownRecordedChargeUsd: number;
+  rulesOnlyCandidateNetPnlRupees: number; recordedFilterCandidateNetPnlRupees: number; differenceBeforeInferenceCostRupees: number;
+  limitations: string[];
+  cases: { caseId: string; rulesEligible: boolean; rulesOnlyCandidateNetPnlRupees: number; recordedFilterCandidateNetPnlRupees: number;
+    review: { caseId: string; status: string; contextHash: string | null; allowsFurtherReview: boolean; providerCalled: boolean;
+      assessment: { schemaVersion: string; caseId: string; modelId: string; promptVersion: string; contextHash: string; decision: string; expiresAt: string } | null;
+      usage: { inputTokens: number; outputTokens: number; chargeUsd: number } | null } }[];
+}
 export interface Snapshot {
   schemaVersion: string; generatedAt: string; dataKind: string; mode: string; evidenceNote: string;
   inputs: { file: string; sha256: string }[]; bars: Bar[];
@@ -20,4 +31,5 @@ export interface Snapshot {
   gates: { id: string; title: string; state: string; detail: string }[];
   returnAdjustments?: { builderVersion: string; inputSha256: string; evidenceNote: string; prices: { securityId: string; closeAt: string; firstKnownAt: string; adjustedTotalReturnClose: number; isTerminal: boolean; terminalReason: string | null; sourceEvidenceIds: string[] }[] } | null;
   rankingPerformance?: { Comparison: Benchmark; Workload: { Companies: number; MetricRows: number; QueriesPerTrial: number }; MedianIndexBuildMs: number; MedianIndexedWithBuildMs: number; Caveat: string } | null;
+  aiEvaluation?: AiEvaluation | null;
 }

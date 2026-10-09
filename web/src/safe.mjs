@@ -37,6 +37,58 @@ function researchFields(research) {
   rows(research.documents, 'documents', row => fields(row, ['documentId', 'securityId', 'publisher', 'sourceUrl', 'publishedAt', 'firstKnownAt', 'licenceId', 'contentSha256']));
   rows(research.companies, 'companies', row => { fields(row, ['securityId', 'modelVersion'], ['score']); for (const key of ['evidenceFactIds', 'riskFlags']) if (!Array.isArray(row[key]) || row[key].some((/** @type {unknown} */ item) => typeof item !== 'string')) throw new Error(`Invalid ${key}.`); });
 }
+
+/** @param {Record<string, any>} ai @param {string} dataKind */
+function aiEvaluationFields(ai, dataKind) {
+  fields(ai, ['schemaVersion', 'mode', 'dataKind', 'planId', 'modelId', 'promptVersion', 'datasetHash', 'recordingsHash'],
+    ['candidateCount', 'rulesEligibleCount', 'continuedCount', 'providerCallCount', 'invalidResponseCount', 'unknownChargeCalls',
+      'knownInputTokens', 'knownOutputTokens', 'knownRecordedChargeUsd', 'rulesOnlyCandidateNetPnlRupees', 'recordedFilterCandidateNetPnlRupees', 'differenceBeforeInferenceCostRupees']);
+  if (ai.schemaVersion !== 'tradetest-ai-evaluation-v1' || ai.mode !== 'RECORDED_OFFLINE' || ai.dataKind !== dataKind ||
+      !['Synthetic', 'ImportedRecords'].includes(ai.dataKind) || !/^[a-f0-9]{64}$/.test(ai.datasetHash) || !/^[a-f0-9]{64}$/.test(ai.recordingsHash) ||
+      !Array.isArray(ai.limitations) || ai.limitations.length > 20 || ai.limitations.some((/** @type {unknown} */ s) => typeof s !== 'string' || s.length > 2000) ||
+      !Array.isArray(ai.cases) || ai.cases.length < 1 || ai.cases.length > 1000) throw new Error('Invalid recorded AI evaluation.');
+  for (const key of ['candidateCount', 'rulesEligibleCount', 'continuedCount', 'providerCallCount', 'invalidResponseCount', 'unknownChargeCalls', 'knownInputTokens', 'knownOutputTokens'])
+    if (!Number.isSafeInteger(ai[key]) || ai[key] < 0) throw new Error('Invalid recorded AI count.');
+  const statuses = ['Accepted', 'RulesBlocked', 'CandidateExpired', 'NoUsableEvidence', 'ContextLimitExceeded', 'InvalidResponse', 'UsageUnavailable', 'UsageLimitExceeded', 'TimedOut', 'ProviderFailed', 'RecordingUnavailable'];
+  const ids = new Set();
+  let rules = 0, filtered = 0, eligible = 0, continued = 0, called = 0, invalid = 0, unknown = 0, inputTokens = 0, outputTokens = 0, charges = 0;
+  rows(ai.cases, 'AI cases', row => {
+    fields(row, ['caseId'], ['rulesOnlyCandidateNetPnlRupees', 'recordedFilterCandidateNetPnlRupees']);
+    if (typeof row.rulesEligible !== 'boolean' || !row.caseId || ids.has(row.caseId)) throw new Error('Invalid recorded AI case.');
+    ids.add(row.caseId);
+    const review = record(row.review, 'AI review');
+    fields(review, ['caseId', 'status']);
+    if (review.caseId !== row.caseId || !statuses.includes(review.status) || typeof review.allowsFurtherReview !== 'boolean' || typeof review.providerCalled !== 'boolean' ||
+        review.contextHash !== null && (typeof review.contextHash !== 'string' || !/^[a-f0-9]{64}$/.test(review.contextHash))) throw new Error('Invalid AI review identity or state.');
+    if (review.assessment != null) {
+      const assessment = record(review.assessment, 'AI assessment');
+      fields(assessment, ['schemaVersion', 'caseId', 'modelId', 'promptVersion', 'contextHash', 'decision', 'expiresAt']);
+      if (review.status !== 'Accepted' || assessment.schemaVersion !== 'tradetest-ai-assessment-v1' || assessment.caseId !== row.caseId ||
+          assessment.modelId !== ai.modelId || assessment.promptVersion !== ai.promptVersion || assessment.contextHash !== review.contextHash ||
+          !['Continue', 'Reject', 'Wait', 'Escalate'].includes(assessment.decision) || !Number.isFinite(Date.parse(assessment.expiresAt))) throw new Error('Invalid recorded assessment.');
+    }
+    if (review.status === 'Accepted' && (!review.assessment || !review.providerCalled || !review.usage) ||
+        review.allowsFurtherReview !== (review.status === 'Accepted' && review.assessment?.decision === 'Continue') ||
+        review.allowsFurtherReview && !row.rulesEligible || !row.rulesEligible && row.rulesOnlyCandidateNetPnlRupees !== 0 ||
+        !review.allowsFurtherReview && row.recordedFilterCandidateNetPnlRupees !== 0 ||
+        review.allowsFurtherReview && row.recordedFilterCandidateNetPnlRupees !== row.rulesOnlyCandidateNetPnlRupees) throw new Error('Recorded AI continuation contradicts its case.');
+    if (review.usage != null) {
+      const usage = record(review.usage, 'Recorded usage');
+      fields(usage, [], ['inputTokens', 'outputTokens', 'chargeUsd']);
+      if (!review.providerCalled || !Number.isSafeInteger(usage.inputTokens) || !Number.isSafeInteger(usage.outputTokens) ||
+          usage.inputTokens < 0 || usage.outputTokens < 0 || usage.chargeUsd < 0 || usage.chargeUsd > 10000) throw new Error('Invalid recorded AI usage.');
+      inputTokens += usage.inputTokens; outputTokens += usage.outputTokens; charges += usage.chargeUsd;
+    }
+    rules += row.rulesOnlyCandidateNetPnlRupees; filtered += row.recordedFilterCandidateNetPnlRupees;
+    eligible += Number(row.rulesEligible); continued += Number(review.allowsFurtherReview); called += Number(review.providerCalled);
+    invalid += Number(review.status === 'InvalidResponse'); unknown += Number(review.providerCalled && review.usage == null);
+  });
+  if (ai.candidateCount !== ai.cases.length || ai.rulesEligibleCount !== eligible || ai.continuedCount !== continued ||
+      ai.providerCallCount !== called || ai.invalidResponseCount !== invalid || ai.unknownChargeCalls !== unknown ||
+      ai.knownInputTokens !== inputTokens || ai.knownOutputTokens !== outputTokens || Math.abs(ai.knownRecordedChargeUsd - charges) > 0.000001 ||
+      Math.abs(ai.rulesOnlyCandidateNetPnlRupees - rules) > 0.000001 || Math.abs(ai.recordedFilterCandidateNetPnlRupees - filtered) > 0.000001 ||
+      Math.abs(ai.differenceBeforeInferenceCostRupees - (filtered - rules)) > 0.000001) throw new Error('Recorded AI totals do not match its cases.');
+}
 /** Validates every field used for rendering before changing the active report. @param {unknown} input @returns {import('./types.ts').Snapshot} */
 export function parseSnapshot(input) {
   const value = record(input, 'Snapshot');
@@ -81,6 +133,7 @@ export function parseSnapshot(input) {
     fields(record(ranking.Workload, 'Ranking workload'), [], ['Companies', 'MetricRows', 'QueriesPerTrial']);
     fields(record(ranking.Comparison, 'Ranking comparison'), [], ['MedianBeforeMs', 'MedianAfterMs', 'ElapsedReductionPercent', 'ThroughputMultiplier']);
   }
+  if (value.aiEvaluation != null) aiEvaluationFields(record(value.aiEvaluation, 'AI evaluation'), value.dataKind);
   return /** @type {import('./types.ts').Snapshot} */ (value);
 }
 

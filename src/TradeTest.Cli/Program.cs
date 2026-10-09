@@ -26,6 +26,19 @@ static async Task<int> MainAsync(string[] args)
             case ["demo"]:
                 Print(new ReplayEngine().Run(ExampleResearch.Bars(), ExampleResearch.Config()), json);
                 return 0;
+            case ["prepare-ai", var datasetPath]:
+            {
+                var input = await AiEvaluationInputs.ReadAsync<RecordedAiDatasetInput>(datasetPath);
+                Print(new RecordedAiEvaluator().Prepare(input.ToDataset()), ResearchJson.OutputOptions);
+                return 0;
+            }
+            case ["evaluate-ai", var datasetPath, var recordingsPath]:
+            {
+                var input = await AiEvaluationInputs.ReadAsync<RecordedAiDatasetInput>(datasetPath);
+                var recordings = await AiEvaluationInputs.ReadAsync<RecordedAiResponse[]>(recordingsPath);
+                Print(await new RecordedAiEvaluator().EvaluateAsync(input.ToDataset(), recordings), ResearchJson.OutputOptions);
+                return 0;
+            }
             case ["export-dashboard", var rootPath, var outputPath]:
             {
                 var snapshot = await DashboardSnapshotBuilder.BuildSyntheticAsync(rootPath);
@@ -150,7 +163,7 @@ static async Task<int> MainAsync(string[] args)
                 return 0;
             }
             default:
-                Console.Error.WriteLine("Usage: demo | export-dashboard <repository-root> <output.json> | build-total-return <input.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words> | export-research <db.sqlite> <as-of-ISO> <security-id> <search-words> <output.json>");
+                Console.Error.WriteLine("Usage: demo | prepare-ai <cases.json> | evaluate-ai <cases.json> <recordings.json> | export-dashboard <repository-root> <output.json> | build-total-return <input.json> | evaluate-intraday <sessions.json> | evaluate-study <input.json> | evaluate-walk-forward <input.json> | evaluate-long-term <input.json> | universe <reference.json> <as-of-ISO> | replay <bars.json> <db.sqlite> <stream> [reference.json] | journal <db.sqlite> <stream> | import-research <batch.json> <db.sqlite> | health <db.sqlite> | research <db.sqlite> <as-of-ISO> <security-id> <search-words> | export-research <db.sqlite> <as-of-ISO> <security-id> <search-words> <output.json>");
                 return 2;
         }
     }

@@ -16,14 +16,16 @@ public sealed record DashboardSnapshot(string SchemaVersion, DateTimeOffset Gene
     string Mode, string EvidenceNote, IReadOnlyList<SnapshotInput> Inputs, IReadOnlyList<MarketBar> Bars,
     SimulationReport Replay, IntradayStudyReport IntradayStudy, WalkForwardReport WalkForward,
     LongTermEvaluationReport LongTerm, DashboardResearch Research, JsonElement Performance,
-    IReadOnlyList<DashboardGate> Gates, TotalReturnBuildReport? ReturnAdjustments = null, JsonElement? RankingPerformance = null);
+    IReadOnlyList<DashboardGate> Gates, TotalReturnBuildReport? ReturnAdjustments = null,
+    JsonElement? RankingPerformance = null, RecordedAiReport? AiEvaluation = null);
 
 /// <summary>Exports only bundled synthetic fixtures. Never discovers or publishes a private database.</summary>
 public static class DashboardSnapshotBuilder
 {
     public const string SchemaVersion = "tradetest-dashboard-v1";
     private static readonly string[] FixtureFiles =
-    ["synthetic-bars.json", "synthetic-research.json", "synthetic-study.json", "synthetic-walk-forward.json", "synthetic-long-term.json", "synthetic-corporate-actions.json"];
+    ["synthetic-bars.json", "synthetic-research.json", "synthetic-study.json", "synthetic-walk-forward.json",
+        "synthetic-long-term.json", "synthetic-corporate-actions.json", "synthetic-ai-cases.json", "synthetic-ai-recordings.json"];
 
     public static string FindRepositoryRoot(string start)
     {
@@ -44,17 +46,22 @@ public static class DashboardSnapshotBuilder
         var walkTask = ResearchJson.ReadAsync<WalkForwardInput>(Path.Combine(fixtures, FixtureFiles[3]), cancellationToken);
         var longTask = ResearchJson.ReadAsync<LongTermInput>(Path.Combine(fixtures, FixtureFiles[4]), cancellationToken);
         var actionsTask = ResearchJson.ReadAsync<TotalReturnBuildInput>(Path.Combine(fixtures, FixtureFiles[5]), cancellationToken);
+        var aiCasesTask = AiEvaluationInputs.ReadAsync<RecordedAiDatasetInput>(Path.Combine(fixtures, FixtureFiles[6]), cancellationToken);
+        var aiRecordingsTask = AiEvaluationInputs.ReadAsync<RecordedAiResponse[]>(Path.Combine(fixtures, FixtureFiles[7]), cancellationToken);
         string performancePath = Path.Combine(repositoryRoot, "benchmarks", "results", "2026-10-08.json");
         var performanceTask = ResearchJson.ReadAsync<JsonElement>(performancePath, cancellationToken);
         string rankingPath = Path.Combine(repositoryRoot, "benchmarks", "results", "2026-10-08-ranking.json");
         var rankingTask = ResearchJson.ReadAsync<JsonElement>(rankingPath, cancellationToken);
-        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, actionsTask, performanceTask, rankingTask);
+        await Task.WhenAll(barsTask, researchTask, studyTask, walkTask, longTask, actionsTask, performanceTask, rankingTask,
+            aiCasesTask, aiRecordingsTask);
         var research = await researchTask;
         var study = await studyTask;
         var walk = await walkTask;
         var longTerm = await longTask;
         var asOf = new DateTimeOffset(2026, 4, 1, 0, 0, 0, TimeSpan.Zero);
         var packet = ResearchServices.BuildPacket(research.Facts, asOf);
+        var aiReport = await new RecordedAiEvaluator().EvaluateAsync((await aiCasesTask).ToDataset(),
+            await aiRecordingsTask, cancellationToken);
         var inputs = new List<SnapshotInput>();
         foreach (string name in FixtureFiles)
         {
@@ -83,10 +90,10 @@ public static class DashboardSnapshotBuilder
                 new("g0", "Licensed data", "Pending", "Vendor access, historical coverage and licences must be confirmed."),
                 new("g1", "Deterministic replay", "Partial", "Offline simulation, fee-aware risk and audit journal; licensed references, feed faults and reconciliation remain."),
                 new("g2", "Company evidence", "Partial", "Dated source packets, atomic imports and consistent private reports; licensed parsers and cross-source checks remain."),
-                new("g3", "Strategy evidence", "Partial", "Frozen chronological studies and walk-forward. No market edge has been established."),
+                new("g3", "Strategy evidence", "Partial", "Frozen studies, walk-forward and recorded AI contract checks. Real model value and market edge remain unmeasured."),
                 new("g4", "Live-data paper sessions", "Pending", "Authenticated no-order feed, reconciliation, fault drills and operational sessions remain."),
                 new("g5", "Broker orders", "Not enabled", "Requires separately reviewed integration and evidence gates."),
                 new("g6", "Real-money activation", "Not enabled", "Requires explicit activation and account-specific risk limits.")
-            ], new TotalReturnBuilder().Build(await actionsTask), await rankingTask);
+            ], new TotalReturnBuilder().Build(await actionsTask), await rankingTask, aiReport);
     }
 }

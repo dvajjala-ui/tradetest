@@ -1,0 +1,62 @@
+[
+  {
+    "caseId": "keep",
+    "contextHash": "6141ae751ae070c2d6909ca3785ce5733d12914bf0f6f4ef5f803bc5eee11ba1",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"keep\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"6141ae751ae070c2d6909ca3785ce5733d12914bf0f6f4ef5f803bc5eee11ba1\",\"decision\":\"Continue\",\"reasonCodes\":[\"SupportsBaseline\"],\"supportingFactIds\":[\"SYNTH-AI-F1\"],\"contradictingFactIds\":[],\"missingEvidence\":[],\"expiresAt\":\"2026-04-01T04:05:00+00:00\"}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  },
+  {
+    "caseId": "keep-loss",
+    "contextHash": "e54c3f8071cff2627bc2f0ac0ea1e5b037da2a52afb690f11a191cca4ab82624",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"keep-loss\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"e54c3f8071cff2627bc2f0ac0ea1e5b037da2a52afb690f11a191cca4ab82624\",\"decision\":\"Continue\",\"reasonCodes\":[\"SupportsBaseline\"],\"supportingFactIds\":[\"SYNTH-AI-F1\"],\"contradictingFactIds\":[],\"missingEvidence\":[],\"expiresAt\":\"2026-04-01T04:05:00+00:00\"}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  },
+  {
+    "caseId": "reject",
+    "contextHash": "d55268b348902a309cbe31b4a4aa4694c1fd2a2afd942bc90221257b5003bbf7",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"reject\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"d55268b348902a309cbe31b4a4aa4694c1fd2a2afd942bc90221257b5003bbf7\",\"decision\":\"Reject\",\"reasonCodes\":[\"ContradictoryEvidence\"],\"supportingFactIds\":[],\"contradictingFactIds\":[\"SYNTH-AI-F1\"],\"missingEvidence\":[],\"expiresAt\":\"2026-04-01T04:05:00+00:00\"}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  },
+  {
+    "caseId": "wait",
+    "contextHash": "9d9067be198329a309999dccab60158775c2a44fd9b3e5aa63aef01bba062f24",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"wait\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"9d9067be198329a309999dccab60158775c2a44fd9b3e5aa63aef01bba062f24\",\"decision\":\"Wait\",\"reasonCodes\":[\"InsufficientEvidence\"],\"supportingFactIds\":[],\"contradictingFactIds\":[],\"missingEvidence\":[\"Independent synthetic filing confirmation.\"],\"expiresAt\":\"2026-04-01T04:05:00+00:00\"}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  },
+  {
+    "caseId": "fabricated-citation",
+    "contextHash": "bab9007124809d8692474aee210428d4c1dbecde5ecf5d916e12158f8c1d6544",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"fabricated-citation\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"bab9007124809d8692474aee210428d4c1dbecde5ecf5d916e12158f8c1d6544\",\"decision\":\"Continue\",\"reasonCodes\":[\"SupportsBaseline\"],\"supportingFactIds\":[\"SYNTH-AI-FUTURE\"],\"contradictingFactIds\":[],\"missingEvidence\":[],\"expiresAt\":\"2026-04-01T04:05:00+00:00\"}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  },
+  {
+    "caseId": "broker-field",
+    "contextHash": "b04d22405460c7f3cd7ca1bbb4673a695884255257fdd15624bd2988ffab15f7",
+    "responseJson": "{\"schemaVersion\":\"tradetest-ai-assessment-v1\",\"caseId\":\"broker-field\",\"modelId\":\"recorded-fixture-v1\",\"promptVersion\":\"dated-candidate-review-v1\",\"contextHash\":\"b04d22405460c7f3cd7ca1bbb4673a695884255257fdd15624bd2988ffab15f7\",\"decision\":\"Continue\",\"reasonCodes\":[\"SupportsBaseline\"],\"supportingFactIds\":[\"SYNTH-AI-F1\"],\"contradictingFactIds\":[],\"missingEvidence\":[],\"expiresAt\":\"2026-04-01T04:05:00+00:00\",\"quantity\":100}",
+    "usage": {
+      "inputTokens": 500,
+      "outputTokens": 100,
+      "chargeUsd": 0.002
+    }
+  }
+]

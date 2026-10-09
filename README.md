@@ -43,6 +43,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 21. [Dated ranking optimization and source provenance](docs/20-ranking-index-and-provenance.md)
 22. [Consistent company reports and private dashboard reads](docs/21-consistent-company-reports.md)
 23. [Deployment, measured gains and current costs](docs/22-release-and-runtime-costs.md)
+24. [Recorded AI contract checks and evaluation](docs/23-recorded-ai-evaluation.md)
 
 Documents 00–11 preserve the original intraday discussion and early planning assumptions. Where an early snapshot differs from the expanded proposal or current vendor documentation, use documents 12–17.
 
@@ -73,6 +74,8 @@ dotnet run --project src/TradeTest.Cli -- evaluate-study fixtures/synthetic-stud
 dotnet run --project src/TradeTest.Cli -- evaluate-walk-forward fixtures/synthetic-walk-forward.json
 dotnet run --project src/TradeTest.Cli -- evaluate-long-term fixtures/synthetic-long-term.json
 dotnet run --project src/TradeTest.Cli -- build-total-return fixtures/synthetic-corporate-actions.json
+dotnet run --project src/TradeTest.Cli -- prepare-ai fixtures/synthetic-ai-cases.json
+dotnet run --project src/TradeTest.Cli -- evaluate-ai fixtures/synthetic-ai-cases.json fixtures/synthetic-ai-recordings.json
 ~~~
 
 To inspect the dated research example locally:
@@ -95,7 +98,7 @@ dotnet run --project src/TradeTest.Cli -- replay fixtures/synthetic-bars.json re
 
 `SimulationConfig.ReferenceData` also accepts these records in study inputs. Long-term inputs accept an optional `ReferenceData` to filter the ranked universe as of each decision date. Legacy examples can run without reference data; those runs do not validate exchange sessions or historical listings.
 
-All bundled prices, documents, companies, calendars, and returns are **synthetic**. The example ₹5,000 is a research configuration, not an activated trading budget. The CLI has no live broker adapter, API credentials, or order route.
+All bundled prices, documents, companies, calendars, returns and recorded AI responses are **synthetic**. The AI harness replays local responses against a strict dated contract; it makes no model API calls. The example ₹5,000 is a research configuration, not an activated trading budget. The CLI has no live broker adapter, API credentials, or order route.
 
 ## Measure offline performance
 

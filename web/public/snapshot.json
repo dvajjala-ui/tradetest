@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tradetest-dashboard-v1",
-  "generatedAt": "2026-10-09T05:40:30.1660243+00:00",
+  "generatedAt": "2026-10-09T06:26:42.5996026+00:00",
   "dataKind": "Synthetic",
   "mode": "PAPER / OFFLINE",
   "evidenceNote": "All companies, prices, filings and returns shown are invented software fixtures. No broker is connected. These results do not estimate profit probability.",
@@ -28,6 +28,14 @@
     {
       "file": "fixtures/synthetic-corporate-actions.json",
       "sha256": "88c34f2a4495acdf4ce13a6b7051e52bb22f30af3707211208522095b2642151"
+    },
+    {
+      "file": "fixtures/synthetic-ai-cases.json",
+      "sha256": "2f8a85c67a6cbd7ae957bc47d31f3d949861479937850b0f9d4f76f8d8ede9d0"
+    },
+    {
+      "file": "fixtures/synthetic-ai-recordings.json",
+      "sha256": "3f55ac3ae94e6829b0a69dcde81f59ccd5ee269c90590228b5fcab58d4dff176"
     },
     {
       "file": "benchmarks/results/2026-10-08.json",
@@ -1041,7 +1049,7 @@
       "id": "g3",
       "title": "Strategy evidence",
       "state": "Partial",
-      "detail": "Frozen chronological studies and walk-forward. No market edge has been established."
+      "detail": "Frozen studies, walk-forward and recorded AI contract checks. Real model value and market edge remain unmeasured."
     },
     {
       "id": "g4",
@@ -1200,5 +1208,274 @@
     "MedianIndexedWithBuildMs": 436.59839999999997,
     "EveryOutputHashMatched": true,
     "Caveat": "Synthetic, local compute on a shared two-CPU container. Query timings exclude index construction, source-document validation, output serialization/hashing, network and AI. The index is useful for repeated dated queries; source histories still need memory and validation. No trading latency or market edge was measured."
+  },
+  "aiEvaluation": {
+    "schemaVersion": "tradetest-ai-evaluation-v1",
+    "mode": "RECORDED_OFFLINE",
+    "dataKind": "Synthetic",
+    "planId": "synthetic-contract-checks-v1",
+    "modelId": "recorded-fixture-v1",
+    "promptVersion": "dated-candidate-review-v1",
+    "datasetHash": "096fe31c14549835c75a77dd079cad29746fcc560fe7984c0ce63b4f8b6cd09d",
+    "recordingsHash": "8db99d0b1e7d1b51e7475c780c8f27f371c246ba4f33bcf18f8f26163f5e61e5",
+    "candidateCount": 10,
+    "rulesEligibleCount": 9,
+    "continuedCount": 2,
+    "providerCallCount": 7,
+    "invalidResponseCount": 2,
+    "unknownChargeCalls": 1,
+    "knownInputTokens": 3000,
+    "knownOutputTokens": 600,
+    "knownRecordedChargeUsd": 0.012,
+    "rulesOnlyCandidateNetPnlRupees": -10,
+    "recordedFilterCandidateNetPnlRupees": 40,
+    "differenceBeforeInferenceCostRupees": 50,
+    "limitations": [
+      "Recorded responses verify contracts; they do not measure a model\u0027s skill or market edge.",
+      "Candidate P\u0026L uses fixed independent sizes and supplied trading costs; it is not a portfolio replay.",
+      "Provider charges are recorded USD metadata, separate from rupee trading P\u0026L; unknown charges are counted.",
+      "Source and citation checks validate identity and chronology, not the truth of a claim or its relevance.",
+      "No real provider call, calibrated profit probability, order permission or latency measurement is produced."
+    ],
+    "cases": [
+      {
+        "caseId": "keep",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": 90,
+        "recordedFilterCandidateNetPnlRupees": 90,
+        "review": {
+          "caseId": "keep",
+          "status": "Accepted",
+          "contextHash": "6141ae751ae070c2d6909ca3785ce5733d12914bf0f6f4ef5f803bc5eee11ba1",
+          "assessment": {
+            "schemaVersion": "tradetest-ai-assessment-v1",
+            "caseId": "keep",
+            "modelId": "recorded-fixture-v1",
+            "promptVersion": "dated-candidate-review-v1",
+            "contextHash": "6141ae751ae070c2d6909ca3785ce5733d12914bf0f6f4ef5f803bc5eee11ba1",
+            "decision": "Continue",
+            "reasonCodes": [
+              "SupportsBaseline"
+            ],
+            "supportingFactIds": [
+              "SYNTH-AI-F1"
+            ],
+            "contradictingFactIds": [],
+            "missingEvidence": [],
+            "expiresAt": "2026-04-01T04:05:00+00:00"
+          },
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": true
+        }
+      },
+      {
+        "caseId": "keep-loss",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": -50,
+        "recordedFilterCandidateNetPnlRupees": -50,
+        "review": {
+          "caseId": "keep-loss",
+          "status": "Accepted",
+          "contextHash": "e54c3f8071cff2627bc2f0ac0ea1e5b037da2a52afb690f11a191cca4ab82624",
+          "assessment": {
+            "schemaVersion": "tradetest-ai-assessment-v1",
+            "caseId": "keep-loss",
+            "modelId": "recorded-fixture-v1",
+            "promptVersion": "dated-candidate-review-v1",
+            "contextHash": "e54c3f8071cff2627bc2f0ac0ea1e5b037da2a52afb690f11a191cca4ab82624",
+            "decision": "Continue",
+            "reasonCodes": [
+              "SupportsBaseline"
+            ],
+            "supportingFactIds": [
+              "SYNTH-AI-F1"
+            ],
+            "contradictingFactIds": [],
+            "missingEvidence": [],
+            "expiresAt": "2026-04-01T04:05:00+00:00"
+          },
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": true
+        }
+      },
+      {
+        "caseId": "reject",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": -50,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "reject",
+          "status": "Accepted",
+          "contextHash": "d55268b348902a309cbe31b4a4aa4694c1fd2a2afd942bc90221257b5003bbf7",
+          "assessment": {
+            "schemaVersion": "tradetest-ai-assessment-v1",
+            "caseId": "reject",
+            "modelId": "recorded-fixture-v1",
+            "promptVersion": "dated-candidate-review-v1",
+            "contextHash": "d55268b348902a309cbe31b4a4aa4694c1fd2a2afd942bc90221257b5003bbf7",
+            "decision": "Reject",
+            "reasonCodes": [
+              "ContradictoryEvidence"
+            ],
+            "supportingFactIds": [],
+            "contradictingFactIds": [
+              "SYNTH-AI-F1"
+            ],
+            "missingEvidence": [],
+            "expiresAt": "2026-04-01T04:05:00+00:00"
+          },
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "wait",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": -30,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "wait",
+          "status": "Accepted",
+          "contextHash": "9d9067be198329a309999dccab60158775c2a44fd9b3e5aa63aef01bba062f24",
+          "assessment": {
+            "schemaVersion": "tradetest-ai-assessment-v1",
+            "caseId": "wait",
+            "modelId": "recorded-fixture-v1",
+            "promptVersion": "dated-candidate-review-v1",
+            "contextHash": "9d9067be198329a309999dccab60158775c2a44fd9b3e5aa63aef01bba062f24",
+            "decision": "Wait",
+            "reasonCodes": [
+              "InsufficientEvidence"
+            ],
+            "supportingFactIds": [],
+            "contradictingFactIds": [],
+            "missingEvidence": [
+              "Independent synthetic filing confirmation."
+            ],
+            "expiresAt": "2026-04-01T04:05:00+00:00"
+          },
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "fabricated-citation",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": 20,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "fabricated-citation",
+          "status": "InvalidResponse",
+          "contextHash": "bab9007124809d8692474aee210428d4c1dbecde5ecf5d916e12158f8c1d6544",
+          "assessment": null,
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "broker-field",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": -90,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "broker-field",
+          "status": "InvalidResponse",
+          "contextHash": "b04d22405460c7f3cd7ca1bbb4673a695884255257fdd15624bd2988ffab15f7",
+          "assessment": null,
+          "usage": {
+            "inputTokens": 500,
+            "outputTokens": 100,
+            "chargeUsd": 0.002
+          },
+          "providerCalled": true,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "expired",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": 40,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "expired",
+          "status": "CandidateExpired",
+          "contextHash": null,
+          "assessment": null,
+          "usage": null,
+          "providerCalled": false,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "unverified",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": 20,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "unverified",
+          "status": "NoUsableEvidence",
+          "contextHash": null,
+          "assessment": null,
+          "usage": null,
+          "providerCalled": false,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "rules-blocked",
+        "rulesEligible": false,
+        "rulesOnlyCandidateNetPnlRupees": 0,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "rules-blocked",
+          "status": "RulesBlocked",
+          "contextHash": null,
+          "assessment": null,
+          "usage": null,
+          "providerCalled": false,
+          "allowsFurtherReview": false
+        }
+      },
+      {
+        "caseId": "missing-recording",
+        "rulesEligible": true,
+        "rulesOnlyCandidateNetPnlRupees": 40,
+        "recordedFilterCandidateNetPnlRupees": 0,
+        "review": {
+          "caseId": "missing-recording",
+          "status": "RecordingUnavailable",
+          "contextHash": "fec68c0bf0deb32f53acdaf3a47b53492ec91e31df4f4702d8be9ece534a9c36",
+          "assessment": null,
+          "usage": null,
+          "providerCalled": true,
+          "allowsFurtherReview": false
+        }
+      }
+    ]
   }
 }
