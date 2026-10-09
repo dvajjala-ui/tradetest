@@ -9,7 +9,7 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 - A proposed ₹5,000 restricted intraday live pilot, pending reconfirmation; a separately budgeted long-term investing lane.
 - Infrastructure/API costs paid separately.
 - A short, selective trading session rather than continuous overtrading.
-- Upstox read-only market data as the first proposed integration; execution broker selection remains open, with replaceable adapters and a comparison before purchase.
+- A laptop-first runtime, Groww primary data/planned execution and Upstox read-only cross-checks; replaceable adapters and evidence gates before live use.
 - Deterministic C# code for indicators, risk controls, order validation, position monitoring, kill switches and audit logging.
 - A rules-only baseline, with Groq-hosted GPT-OSS and OpenAI Luna/Sol/Astra added only for roles that pass an evidence-based evaluation.
 - Codex, Claude, Gemini and other available AI tools as research/review assistants where useful.
@@ -45,8 +45,9 @@ Build a **C#/.NET evidence, backtesting and execution platform** for Indian mark
 23. [Deployment, measured gains and current costs](docs/22-release-and-runtime-costs.md)
 24. [Recorded AI contract checks and evaluation](docs/23-recorded-ai-evaluation.md)
 25. [Selected setup, monthly budget and learning plan](docs/24-setup-budget-and-learning.md)
+26. [Laptop-first setup, free hosting, two sources and AI keys](docs/25-local-dual-source-and-ai-setup.md)
 
-Documents 00–11 preserve the original intraday discussion and early planning assumptions. Use the current implementation status and later dated reports when assumptions differ. Document 24 selects the initial VM/data setup and corrects the older Groww historical-coverage claim.
+Documents 00–11 preserve the original intraday discussion and early planning assumptions. Use the current implementation status and later dated reports when assumptions differ. Document 25 updates the earlier VM-first recommendation to supervised laptop testing with Groww and Upstox, and records unresolved historical-coverage claims.
 
 ## Open the dashboard
 

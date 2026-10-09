@@ -3,7 +3,7 @@
 Read README.md, the historical context in docs/00-conversation-context.md, and the current proposal in docs/12-master-implementation-plan.md through docs/14-research-ledger-and-failure-lessons.md before making architectural changes.
 
 ## Mission
-Plan an auditable India-focused research platform with **separate** intraday and long-term investing lanes. The user delegated setup/broker selection: document 24 recommends a persistent 2-vCPU/4-GiB Linux VM and Upstox read-only market data for the first integration. Execution broker selection is still open; current simulator charges use Groww assumptions. The ₹5,000 intraday live pilot remains provisional and is not activated; infrastructure is funded separately. Prove or reject improvement after real costs against rules-only and passive baselines.
+Plan an auditable India-focused research platform with **separate** intraday and long-term investing lanes. Latest user preference: laptop-first supervised testing, Groww primary data/planned execution, and free Upstox read-only cross-checks. The user accepts Groww's approximately ₹500/month API plan; no subscription or credentials have been configured. Document 25 supersedes the earlier VM-first recommendation; a persistent Linux VM is optional for unattended operation. The ₹5,000 intraday live pilot remains provisional and is not activated; infrastructure is funded separately. Prove or reject improvement after real costs against rules-only and passive baselines.
 
 ## Non-negotiable architecture
 1. AI never gets unrestricted broker authority.
@@ -31,4 +31,4 @@ Do not enable real-money LIVE mode merely because code compiles or a backtest is
 
 ## Setup and learning checkpoint
 
-Read docs/24-setup-budget-and-learning.md for the current cost assumptions, one-command offline check and private Compose API runtime. The app has no Upstox/Groww or actual AI provider adapter, scheduled real-data ingestion, adaptive model fitting, drift promotion or automatic architecture changes. Historical LLM tests may contain pretrained future knowledge; use prospective frozen-version comparisons for predictive validation. More indexed context is retrieval, not automatic model training.
+Read docs/25-local-dual-source-and-ai-setup.md for current hosting, broker and AI-key choices, and document 24 for the one-command offline check and private Compose runtime. Groq and OpenAI are the two planned AI-provider keys; the indexed context system starts with existing SQLite/FTS5. The app has no Upstox/Groww or actual AI provider adapter, scheduled real-data ingestion, adaptive model fitting, drift promotion or automatic architecture changes. Historical LLM tests may contain pretrained future knowledge; use prospective frozen-version comparisons for predictive validation. More indexed context is retrieval, not automatic model training.

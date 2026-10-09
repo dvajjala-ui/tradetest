@@ -18,7 +18,7 @@ Use the .NET 10 SDK and run `dotnet test TradeTest.slnx`. The current suite has 
 
 ## Immediate build sequence
 
-1. Verify the proposed Upstox read-only data access, coverage and usage terms; compare Groww's replacement historical endpoint and licensed NSE datasets where needed. Record missing fields and total price before paid access. [Setup and learning plan](24-setup-budget-and-learning.md).
+1. Verify the selected Groww primary/Upstox secondary data access, coverage and usage terms. The user accepts Groww's monthly API cost. Resolve its published historical-coverage discrepancy in authenticated tests, and assess licensed NSE data where needed. [Latest setup and key plan](25-local-dual-source-and-ai-setup.md).
 2. Populate the security master/calendar and return builder with licensed dated records. Reconcile adjustments and terminal outcomes against an independent source; model unsupported actions explicitly.
 3. Connect licensed ingestion to the atomic import/quarantine path, add parser correction jobs, cross-source checks, and a quality dashboard.
 4. Register hypotheses and evaluation dates before applying real history. Run the walk-forward and holdout harness, retain every failed variant, and reconcile an actual investable passive benchmark.

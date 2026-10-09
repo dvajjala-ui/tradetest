@@ -24,7 +24,7 @@ Decide which official sources can be automated reliably, whether V1 should be pr
 Recheck model IDs and token pricing at build time. First decide whether each model beats a rules-only or simpler-model baseline on a dated evaluation set; then define fallback, deadlines and escalation. Assess the user's additional named AI tool after its identity is known.
 
 ## Infrastructure
-The user delegated this choice. [The current setup](24-setup-budget-and-learning.md) selects a small persistent Linux VM for unattended operation, with local offline testing and Vercel for the dashboard. PostgreSQL, notifications and secret-store extensions remain later decisions based on measured needs.
+The [latest user preference](25-local-dual-source-and-ai-setup.md) is supervised laptop testing with Groww primary data, Upstox cross-checks and Vercel for the dashboard. A persistent VM is optional for unattended operation. PostgreSQL, notifications and secret-store extensions remain later decisions based on measured needs.
 
 ## Compliance
 Before real deployment, verify current Indian regulations, exchange/broker terms, retail API/algo rules, static-IP requirements and any registration/approval obligations using current primary sources.

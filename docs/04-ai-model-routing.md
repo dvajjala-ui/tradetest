@@ -2,6 +2,8 @@
 
 > Original model-routing hypothesis. The current proposal starts with a rules-only baseline and adds a model only when controlled evaluation supports it. See [12-master-implementation-plan.md](12-master-implementation-plan.md) and [14-research-ledger-and-failure-lessons.md](14-research-ledger-and-failure-lessons.md).
 
+The current exact model IDs, two-provider key checklist and context-retrieval plan are in [document 25](25-local-dual-source-and-ai-setup.md). Actual model adapters remain unimplemented; the present harness replays recorded responses.
+
 ## Principle
 Use exact C# computation first, then progressively more capable AI only when additional reasoning is useful. Never send every tick/candle to an LLM.
 

@@ -2,15 +2,17 @@
 
 Checked 2026-10-09. The user delegated the computer, broker and hosting recommendation. This document selects the initial research setup; it does not purchase an account or activate trading. [Current implementation status](16-implementation-status.md) remains the readiness record.
 
+Latest user update: [document 25](25-local-dual-source-and-ai-setup.md) selects supervised laptop testing, Groww primary data and Upstox cross-checks. The VM budget below is now an optional unattended-hosting alternative. The offline helper, Compose instructions and learning protocol remain applicable.
+
 ## Selected setup
 
-Use the existing **Vercel dashboard**, a **persistent Ubuntu 24.04 Linux VM with 2 vCPUs and 4 GiB RAM**, and **Upstox for the first read-only market-data integration**. DigitalOcean Bengaluru is the initial region to test. Compare its feed freshness and network tail latency against a local machine before treating that region as optimal. A laptop is enough for today's offline examples; the VM is for unattended operation without laptop sleep or home-network interruptions.
+Use the existing **Vercel dashboard** and the **laptop for initial supervised testing**. If unattended hosting is later needed, a persistent Ubuntu 24.04 VM with 2 vCPUs and 4 GiB RAM is the paid alternative; DigitalOcean Bengaluru is one region to benchmark. Compare feed freshness and network tail latency against the laptop before treating any region as optimal. Groww primary data and Upstox read-only cross-checks are the latest source choices.
 
 Use a normal VM and Docker Compose. Managing microVM infrastructure, a GPU, Kubernetes or distributed queues adds no demonstrated benefit to the present single-worker workload. Start with .NET, SQLite WAL/FTS5 and bounded in-memory caches. Move storage or services only after measurements show a bottleneck.
 
 Upstox's [Analytics Token](https://upstox.com/developer/api-documentation/analytics-token/) is free, valid for one year and read-only. Market/historical GET access needs no static IP; account/portfolio reads do. The token cannot submit or modify orders. **Its adapter is not implemented**, and actual data coverage and permitted use must be checked with the account. Existing simulated charges still use Groww assumptions.
 
-## Monthly budget and initial capital
+## Optional paid VM budget and initial capital
 
 | Item | Initial monthly allowance | Basis |
 | --- | ---: | --- |
@@ -24,7 +26,9 @@ Upstox's [Analytics Token](https://upstox.com/developer/api-documentation/analyt
 
 This finalizes the **initial budget**, not an all-inclusive invoice. Historical and corporate-data licence quotes remain unknown. Commercial hosting would add [Vercel Pro's $20 base plus usage](https://vercel.com/docs/plans/pro-plan); it is not needed for the eligible private prototype. Do not buy paid AI tools or a second broker subscription before a benchmark shows their value. Provider-side limits and application accounting both need implementation before automated paid calls; the $20 row is not an already enforced app limit.
 
-Groww remains an alternative at [₹499 plus taxes/month](https://groww.in/trade-api), or ₹588.82 if checkout applies 18% GST. Its newer [historical candles endpoint](https://groww.in/trade-api/docs/curl/backtesting) documents data from 2020; the old three-month intraday statement describes a deprecated endpoint. Verify completeness, adjustments, delisted coverage and rights before deciding whether a separate dataset is necessary. Execution-broker selection remains open.
+With the latest two-source choice, this table is only the optional hosting/AI subtotal: add Groww's subscription if enabled. The current laptop-first budget is in document 25.
+
+The user now accepts Groww as the primary source at [₹499 plus taxes/month](https://groww.in/trade-api), or ₹588.82 if checkout applies 18% GST. Its newer [historical candles endpoint](https://groww.in/trade-api/docs/curl/backtesting) documents data from 2020, while the subscription page still advertises up to three months. Test actual entitlement, completeness, adjustments, delisted coverage and rights before promising depth. Execution integration retains its evidence gates.
 
 **Put ₹0 of real trading capital into this app while validating it.** The ₹5,000 examples are virtual research settings. The initial cash commitment is the VM bill if chosen; local offline testing needs no new service purchase. Long-term portfolio capital is a separate decision based on the owner's finances, horizon and loss tolerance. Infrastructure spending and a positive synthetic report do not justify a portfolio allocation.
 
@@ -32,7 +36,7 @@ Groww remains an alternative at [₹499 plus taxes/month](https://groww.in/trade
 
 1. **Test now:** open [the dashboard](https://tradetest-dashboard.vercel.app/#studies). It needs no broker login. For fresh local reports, install the .NET 10 SDK and Python 3, clone this repository and run `python3 scripts/run-offline-check.py` at its root. Build dependency downloads may use the network; the workflows make no broker or model API calls.
 2. **For unattended operation:** create the VM above with an SSH key and daily backups. Install Git, Python 3 and Docker with the Compose plugin. Keep SSH restricted to the operator. No public API port is needed for the initial setup.
-3. **For real-data work:** open/complete KYC for the chosen Upstox account, then create its Analytics Token in Developer Apps. Keep it in a private local/VM secret store; never send it through chat, put it in the dashboard, or commit it. Account access alone does not connect the current app.
+3. **For real-data work:** prepare Groww API entitlement and a supported authentication flow, plus an Upstox account/Analytics Token for cross-checks. [Document 25](25-local-dual-source-and-ai-setup.md) maps these credentials and the two AI-provider keys. Keep them in a private secret store; account access alone does not connect the current app.
 4. **Optional deployment convenience:** connect `dvajjala-ui/tradetest` in [Vercel Git settings](https://vercel.com/dvajjala-2765s-projects/tradetest-dashboard/settings/git) and verify push-triggered deployment. Manual deployment already works; this is independent of broker setup.
 
 The VM's role today is to host the read-only demo API. A scheduled ingestion/paper worker, real-data adapter, remote HTTPS access and restore drills remain to build and verify.
@@ -77,7 +81,7 @@ Numeric features stay in typed tables. Retrieval uses security/topic/time filter
 
 ## How learning and testing will work
 
-1. **Acquire and reconcile real data.** Implement a no-order Upstox adapter with explicit timezone/instrument mapping, request budgets, token expiry, gaps and raw response hashes. Start with one liquid cash-equity intraday stream because the current replay engine handles one instrument per session. Build the company corpus separately, initially around 50 predeclared companies, with permitted dated filings and historical universe/actions including failures and delistings. Confirm actual coverage before running historical claims.
+1. **Acquire and reconcile real data.** Implement no-order Groww ingestion, then Upstox cross-checks, with explicit timezone/instrument mapping, request budgets, token expiry, gaps and raw response hashes. Start with one liquid cash-equity intraday stream because the current replay engine handles one instrument per session. Build the company corpus separately, initially around 50 predeclared companies, with permitted dated filings and historical universe/actions including failures and delistings. Confirm actual coverage before running historical claims.
 2. **Freeze baselines before tests.** Register rules, costs, universe, model/prompt, source vintage and metrics. Use chronological walk-forward and an untouched final holdout, identical candidate snapshots and conservative spread/slippage. Compare rules-only, no-trade and relevant passive total-return baselines. The current walk-forward tool partitions fixed rules; it does not fit ML parameters. Adaptive fitting, label-overlap purging/embargo where needed and a failed-trial registry remain to implement.
 3. **Treat LLM historical results cautiously.** Blinding supplied later outcomes does not remove future events memorized during pretraining. [Glasserman/Lin](https://arxiv.org/abs/2309.17322) and [Lopez-Lira/Tang/Zhu](https://arxiv.org/abs/2504.14765) examine this contamination. Masking names/dates or asking a model to act as if it were in the past cannot establish an unbiased test. Prefer prospective paper/shadow comparisons after freezing the model version. The existing recorded harness validates contracts and arithmetic, not model forecasting skill.
 4. **Separate knowledge updates from strategy changes.** Proposed daily source jobs append dated evidence and quarantine failures. Proposed weekly reviews diagnose drift, propose hypotheses and run challengers beside a frozen baseline. New evidence may update research packets; changing a prompt, threshold, risk rule or portfolio policy creates a new experiment and requires validation. Thirty paper sessions is an engineering floor, not proof of statistical edge.
