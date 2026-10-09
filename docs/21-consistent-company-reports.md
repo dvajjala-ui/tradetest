@@ -43,4 +43,4 @@ This increment passes **52 .NET tests and seven web tests**. Fresh Chromium chec
 
 ## Deployment status
 
-The Oct 8 temporary Vercel preview expired. On Oct 9, `vercel whoami` still reported the workspace logged out, and no authenticated Vercel deployment tools were exposed. Browser login is separate from workspace authorization. The checked-in `web/vercel.json`, successful web build and `web` root-directory settings remain ready. Permanent ownership and Git auto-deploy have not been verified.
+The Oct 8 temporary preview expired. Workspace authorization completed on Oct 9, and the permanent dashboard is live at [tradetest-dashboard.vercel.app](https://tradetest-dashboard.vercel.app). HTTP access, report identity and project ownership were verified. The GitHub project connection was rejected; automatic deployment from pushes remains pending. See [the production workflow](18-deployment-and-runtime.md).

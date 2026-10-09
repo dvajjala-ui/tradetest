@@ -1,6 +1,6 @@
 # Dashboard deployment and runtime
 
-As of 2026-10-08. The user authorized Vercel setup, further engineering and checkpoint pushes in a five-hour work window. This document describes the first deployment increment.
+Checked 2026-10-09. The permanent static dashboard is live at [tradetest-dashboard.vercel.app](https://tradetest-dashboard.vercel.app), in project `tradetest-dashboard` under `dvajjala-2765s-projects`. The user authorized deployment and checkpoint pushes.
 
 ## Runtime choice
 
@@ -51,7 +51,17 @@ The checked-in `web/vercel.json` defines security headers, revalidation of the r
 
 Browser login and workspace CLI login are separate. Vercel's [CLI login](https://vercel.com/docs/cli/login) uses a device authorization flow. An installed integration must also expose authenticated deployment tools in the active session before it can be used.
 
-The first quick deployment was made using Vercel's temporary deployment flow while authenticated tools were unavailable. It must be claimed in the owner's account to persist. A temporary URL is not proof that a permanent Git-linked project has been created. Claim links are provided privately in the chat and are not committed to this repository.
+The first temporary preview expired. Workspace device authorization completed on Oct 9. The permanent production deployment built pushed Git commit `2394b079d8a98c798dbd737fac0ec1c841080aaf` directly from the public repository. Its page and JSON report returned 200; the hosted report exactly matched the committed report, and security headers were present.
+
+The project repository connection was rejected by Vercel and remains a separate setup step. A Git-source deployment can succeed while the project's automatic repository connection is absent. Do not infer push-triggered deployment from the Git metadata of a manual build. Connect `dvajjala-ui/tradetest` in [the project's Git settings](https://vercel.com/dvajjala-2765s-projects/tradetest-dashboard/settings/git), then verify a later main-branch push creates a deployment.
+
+Until Git auto-deploy is verified, update production explicitly:
+
+~~~bash
+python3 scripts/deploy-vercel.py
+~~~
+
+The helper requires a clean checkout matching pushed main and an authenticated workspace CLI. It deploys that exact commit using Vercel's Git-source API, waits for readiness and verifies the source SHA. It uploads no workspace files, database, environment file or token. It does not purchase a plan or create API subscriptions.
 
 ## Read-only .NET service
 
@@ -94,4 +104,4 @@ Supply the token and exact allowed origins through the deployment platform's sec
 
 The first increment passes 32 .NET tests, 4 dashboard contract/security tests, and browser checks for all six views, search, import/restore, and a 390-pixel mobile viewport. The web build is roughly 10.6 KB of gzipped JavaScript, excluding the JSON report and CSS. These are engineering measurements.
 
-Permanent ownership, Git auto-deploy, real-data access, licensed parsers and paper-feed operation must be verified separately. The work does not establish a profitable strategy or activate real-money trading.
+Permanent project ownership and production HTTP access have been verified. Git auto-deploy, real-data access, licensed parsers and paper-feed operation still need verification. The work does not establish a profitable strategy or activate real-money trading.
